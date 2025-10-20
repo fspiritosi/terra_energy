@@ -1,6 +1,5 @@
 "use client";
 
-import { type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -11,17 +10,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { clienteNavItems, operacionNavItems } from "./nav-config";
 
-export function NavMain({
-    items,
-}: {
-    items: {
-        title: string;
-        url: string;
-        icon?: LucideIcon;
-        isActive?: boolean;
-    }[];
-}) {
+export function NavMain({ userType }: { userType: string }) {
+    const items = userType === "cliente" ? clienteNavItems : operacionNavItems;
     const pathname = usePathname();
 
     return (

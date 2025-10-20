@@ -6,97 +6,117 @@
 
 @layer base {
   :root {
-    /* Fondo crema claro */
-    --background: 54 56% 96%;
-    --foreground: 18 36% 23%;
+    /* Fondo gris muy claro como en la landing */
+    --background: 0 0% 96%;
+    --foreground: 18 36% 49%; /* Rojo Toscano para texto principal */
 
-    /* Cards con fondo blanco suave */
+    /* Cards con fondo blanco puro como en la landing */
     --card: 0 0% 100%;
-    --card-foreground: 18 36% 23%;
+    --card-foreground: 18 36% 49%; /* Rojo Toscano para texto en cards */
 
-    /* Popovers */
+    /* Popovers blancos */
     --popover: 0 0% 100%;
-    --popover-foreground: 18 36% 23%;
+    --popover-foreground: 18 36% 49%;
 
-    /* Primary: Rojo Toscano (marrón oscuro) */
-    --primary: 18 36% 36%;
-    --primary-foreground: 54 56% 96%;
+    /* Primary: Nuevo amarillo/naranja - #f4951d */
+    --primary: 33 91% 54%;
+    --primary-foreground: 0 0% 100%; /* Texto blanco en botones naranjas */
 
-    /* Secondary: Amarillo Pastel (naranja claro) */
-    --secondary: 32 85% 75%;
-    --secondary-foreground: 18 36% 23%;
+    /* Secondary: Rojo Toscano para títulos importantes - #7c4d3a */
+    --secondary: 18 36% 49%;
+    --secondary-foreground: 0 0% 100%; /* Texto blanco en elementos marrones */
 
-    /* Muted: Crema suave */
-    --muted: 54 56% 92%;
-    --muted-foreground: 18 20% 45%;
+    /* Muted: Fondo gris claro para áreas secundarias */
+    --muted: 0 0% 94%;
+    --muted-foreground: 25 27% 43%; /* MidnightBlue para texto secundario */
 
-    /* Accent: MidnightBlue (marrón dorado) */
-    --accent: 42 48% 45%;
-    --accent-foreground: 54 56% 96%;
+    /* Accent: MidnightBlue (Marrón Arcilla) para detalles - #8c6a51 */
+    --accent: 25 27% 43%;
+    --accent-foreground: 0 0% 100%;
 
     /* Destructive */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    /* Borders y inputs con tono tierra */
-    --border: 42 30% 85%;
-    --input: 42 30% 85%;
-    --ring: 18 36% 36%;
+    /* Borders y inputs como en la landing */
+    --border: 0 0% 88%; /* Bordes grises claros */
+    --input: 0 0% 100%; /* Inputs con fondo blanco puro */
+    --ring: 33 91% 54%; /* Ring naranja para focus */
 
-    /* Charts con la paleta de colores */
-    --chart-1: 18 36% 36%;
-    --chart-2: 32 85% 75%;
-    --chart-3: 42 48% 45%;
-    --chart-4: 54 56% 76%;
-    --chart-5: 32 70% 60%;
+    /* Charts con la nueva paleta optimizada para modo claro */
+    --chart-1: 33 91% 54%;  /* Nuevo naranja - principal */
+    --chart-2: 18 36% 49%;  /* Rojo Toscano - títulos */
+    --chart-3: 25 27% 43%;  /* MidnightBlue Arcilla - detalles */
+    --chart-4: 33 91% 70%;  /* Naranja más claro */
+    --chart-5: 25 27% 60%;  /* Marrón más claro */
 
     --radius: 0.5rem;
+
+    /* Sidebar variables para modo claro */
+    --sidebar: 33 91% 54%; /* Sidebar naranja como header de la landing */
+    --sidebar-foreground: 0 0% 100%; /* Texto blanco */
+    --sidebar-primary: 0 0% 100%; /* Elementos activos en blanco */
+    --sidebar-primary-foreground: 33 91% 54%; /* Texto naranja en elementos activos */
+    --sidebar-accent: 33 91% 45%; /* Naranja más oscuro para hover */
+    --sidebar-accent-foreground: 0 0% 100%; /* Texto blanco en hover */
+    --sidebar-border: 0 0% 100%; /* Bordes blancos */
+    --sidebar-ring: 0 0% 100%; /* Ring blanco */
   }
 
   .dark {
-    /* Fondo oscuro con tono tierra */
-    --background: 18 36% 12%;
-    --foreground: 54 56% 96%;
+    /* Fondo oscuro como el sidebar - más oscuro */
+    --background: 240 5.9% 10%;
+    --foreground: 0 0% 95%;
 
-    /* Cards oscuras */
-    --card: 18 30% 16%;
-    --card-foreground: 54 56% 96%;
+    /* Cards oscuras con tono similar al sidebar */
+    --card: 240 5.9% 15%;
+    --card-foreground: 0 0% 95%;
 
     /* Popovers oscuros */
-    --popover: 18 30% 16%;
-    --popover-foreground: 54 56% 96%;
+    --popover: 240 5.9% 15%;
+    --popover-foreground: 0 0% 95%;
 
-    /* Primary: Amarillo Pastel más brillante en dark */
-    --primary: 32 85% 75%;
-    --primary-foreground: 18 36% 12%;
+    /* Primary: Naranja brillante para destacar - #f4951d */
+    --primary: 33 91% 54%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Secondary: Rojo Toscano en dark */
-    --secondary: 18 36% 36%;
-    --secondary-foreground: 54 56% 96%;
+    /* Secondary: Naranja más suave para elementos secundarios */
+    --secondary: 33 91% 45%;
+    --secondary-foreground: 0 0% 100%;
 
-    /* Muted oscuro */
-    --muted: 18 25% 22%;
-    --muted-foreground: 54 30% 65%;
+    /* Muted oscuro similar al fondo */
+    --muted: 240 5.9% 20%;
+    --muted-foreground: 0 0% 70%;
 
-    /* Accent: MidnightBlue más claro */
-    --accent: 42 48% 55%;
-    --accent-foreground: 18 36% 12%;
+    /* Accent: Naranja más claro para detalles */
+    --accent: 33 91% 60%;
+    --accent-foreground: 240 5.9% 10%;
 
     /* Destructive */
     --destructive: 0 62.8% 50%;
-    --destructive-foreground: 54 56% 96%;
+    --destructive-foreground: 0 0% 100%;
 
-    /* Borders y inputs oscuros */
-    --border: 18 25% 25%;
-    --input: 18 25% 25%;
-    --ring: 32 85% 75%;
+    /* Borders y inputs oscuros como el sidebar */
+    --border: 240 5.9% 25%;
+    --input: 240 5.9% 15%;
+    --ring: 33 91% 54%;
 
-    /* Charts en dark mode */
-    --chart-1: 32 85% 75%;
-    --chart-2: 42 48% 55%;
-    --chart-3: 54 56% 76%;
-    --chart-4: 18 36% 45%;
-    --chart-5: 32 70% 65%;
+    /* Charts en dark mode - predominio del naranja */
+    --chart-1: 33 91% 54%;  /* Naranja principal */
+    --chart-2: 33 91% 65%;  /* Naranja más claro */
+    --chart-3: 33 91% 45%;  /* Naranja más oscuro */
+    --chart-4: 0 0% 80%;    /* Gris claro para contraste */
+    --chart-5: 240 5.9% 60%; /* Gris azulado del sidebar */
+
+    /* Sidebar variables para modo oscuro - mantener el color actual */
+    --sidebar: 240 5.9% 10%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 33 91% 54%; /* Naranja para elementos activos */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 5.9% 15%; /* Hover más claro que el fondo */
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 240 5.9% 20%;
+    --sidebar-ring: 33 91% 54%; /* Ring naranja */
   }
 }
 
@@ -118,37 +138,48 @@
   letter-spacing: 0.02em;
 }
 
-:root {
-  --sidebar: hsl(0 0% 98%);
-  --sidebar-foreground: hsl(240 5.3% 26.1%);
-  --sidebar-primary: hsl(240 5.9% 10%);
-  --sidebar-primary-foreground: hsl(0 0% 98%);
-  --sidebar-accent: hsl(240 4.8% 95.9%);
-  --sidebar-accent-foreground: hsl(240 5.9% 10%);
-  --sidebar-border: hsl(220 13% 91%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+/* Forzar el color del sidebar en modo claro */
+:root:not(.dark) .bg-sidebar {
+  background-color: hsl(33, 91%, 54%) !important;
 }
 
-.dark {
-  --sidebar: hsl(240 5.9% 10%);
-  --sidebar-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-primary: hsl(224.3 76.3% 48%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(240 3.7% 15.9%);
-  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-border: hsl(240 3.7% 15.9%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+:root:not(.dark) .text-sidebar-foreground {
+  color: hsl(0, 0%, 100%) !important;
 }
+
+:root:not(.dark) .border-sidebar-border {
+  border-color: hsl(0, 0%, 100%) !important;
+}
+
+/* Asegurar que el modo oscuro mantenga sus colores */
+.dark .bg-sidebar {
+  background-color: hsl(240, 5.9%, 10%) !important;
+}
+
+.dark .text-sidebar-foreground {
+  color: hsl(0, 0%, 95%) !important;
+}
+
+/* Header en modo oscuro también con el color del sidebar */
+.dark .bg-primary {
+  background-color: hsl(240, 5.9%, 10%) !important;
+}
+
+.dark .text-primary-foreground {
+  color: hsl(33, 91%, 54%) !important; /* Texto naranja en header oscuro */
+}
+
+
 
 @theme inline {
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
 }
 
 @layer base {
