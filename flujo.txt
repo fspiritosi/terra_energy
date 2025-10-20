@@ -1,0 +1,57 @@
+Diagramas de Flujo — Versión 1 (con swimlanes)
+Swimlanes: UsuarioCliente | Sistema | Operación (UsuarioInterno) | Inspector
+
+Flujo A: Solicitud de inspección (con fecha programada)
+
+UsuarioCliente: Nueva Solicitud → Selecciona TipoInspeccion.
+Sistema: Carga Formulario de solicitud (vigente) + permite agregar Ítems:
+Elegir de Catálogo o Alta Libre.
+UsuarioCliente: Completa campos, adjunta imágenes → Define fecha programada → Enviar.
+Sistema: Valida campos y adjuntos → Crea Solicitud (estado=“enviada”) y OrdenInspeccion (estado=“pendiente”, programada_para=fecha) → Notifica a Operación.
+Flujo B: Asignación manual y calendario
+5. Operación: Revisa Bandeja de Pendientes → Asigna inspector y confirma/ajusta fecha.
+6. Sistema: Actualiza Orden (estado=“pendiente” o “en_curso” según workflow), crea/actualiza CalendarioEvento.
+7. Operación: (Opcional) Reprograma → Orden=“reprogramada” + nuevo evento calendario.
+
+Flujo C: Ejecución de inspección
+8. Inspector: Abre Orden en su agenda → Sistema carga Formulario de inspección (versión vigente).
+9. Inspector: Completa datos, adjunta imágenes, define resultado (aprobado/reprobado/con_observaciones).
+10. Sistema: Registra Inspeccion, adjuntos; Orden=“completada”; Solicitud=“inspeccionada”.
+
+Flujo D: Generación de informe con QR y entrega
+11. Sistema: Genera PDF:
+- Branding dual: logo del proveedor (tu cliente) + logo del Cliente final.
+- Incluye fotos y resultados, sello QR (payload: URL verificación).
+12. Sistema: Guarda Documento (informe_pdf), setea qr_payload/qr_imagen_url; actualiza estado de Solicitud a “aprobada” o “rechazada”.
+13. Sistema: Notifica a UsuarioCliente (email/in-app).
+14. UsuarioCliente: Visualiza resultado online y descarga PDF.
+
+Flujos alternos:
+
+Validación fallida: vuelve a edición con errores por campo.
+Adjuntos superan límites: mensaje y reintento (configurable por cliente).
+Reprogramación por clima/agenda: crea nuevo evento y mantiene historial.
+Anulación: Solicitud “cancelada” si aún no ejecutada.
+Consideraciones técnicas (Supabase + Next.js)
+Auth:
+Usuarios separados por tipo: auth tables distintas o unificadas con columna tipo y RLS por cliente_id.
+RLS en cada tabla con política “usuario_cliente sólo ve/gestiona registros con su cliente_id”.
+Storage:
+Buckets por tipo (solicitudes, inspecciones, documentos).
+Objetos privados con URL firmada; hash_integridad para verificación.
+PDF:
+Servicio de render (server-side Next.js route/edge function) que:
+Ensambla HTML con logos (tu cliente + del cliente final desde ConfiguracionCliente).
+Inserta QR (generación local con librería y sube imagen a storage o embeber vector).
+Firma hash del contenido y persiste.
+QR:
+payload = URL corta firmada: /verificar/{documento_id}?sig=...
+Página pública de verificación muestra estado y metadatos.
+i18n y moneda:
+UI en español.
+Moneda en ARS/USD seleccionable por cliente (guardado en ConfiguracionCliente).
+Formularios:
+Builder para FormularioCampo (tipos, opciones).
+Congelar version_formulario en cada respuesta/inspección.
+Calendario:
+Endpoints para feed ICS o integración con Google Calendar (futuro).
