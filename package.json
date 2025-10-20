@@ -4,7 +4,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit",
+    "gentypes": "npx supabase gen types typescript --project-id ingqobrevncfgofvyobg --schema public > database.types.ts"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",
@@ -25,6 +27,7 @@
     "next-themes": "^0.4.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "supabase": "^2.51.0",
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
