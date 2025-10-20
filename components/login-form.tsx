@@ -47,6 +47,13 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <div className="flex justify-center mb-8">
+        <img
+          src="/Terra Energy Services - logo dorado.png"
+          alt="Terra Energy Services"
+          className="h-24 w-auto"
+        />
+      </div>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Iniciar Sesión</CardTitle>

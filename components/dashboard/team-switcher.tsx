@@ -2,40 +2,16 @@
 
 import * as React from "react";
 
-import {
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from "@/components/ui/sidebar";
-
-export function TeamSwitcher({
-    teams,
-}: {
-    teams: {
-        name: string;
-        logo: React.ElementType;
-        plan: string;
-    }[];
-}) {
-    const activeTeam = teams[0];
-
-    if (!activeTeam) {
-        return null;
-    }
-
+export function TeamSwitcher() {
     return (
-        <SidebarMenu>
-            <SidebarMenuItem>
-                <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent">
-                    <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                        <activeTeam.logo className="size-4" />
-                    </div>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                        <span className="truncate font-logo text-base">{activeTeam.name}</span>
-                        <span className="truncate text-xs">{activeTeam.plan}</span>
-                    </div>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-        </SidebarMenu>
+        <div className="w-full p-2 flex justify-center">
+            <div className="bg-white dark:bg-transparent rounded-lg p-2">
+                <img
+                    src="/Terra Energy Services - logo dorado.png"
+                    alt="Terra Energy Services"
+                    className="max-w-32 dark:max-w-32 w-full h-auto object-contain"
+                />
+            </div>
+        </div>
     );
 }

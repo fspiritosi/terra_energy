@@ -72,16 +72,16 @@ export function DashboardOperacion() {
                                         <p className="font-medium flex items-center gap-2">
                                             {solicitud.id}
                                             {solicitud.urgente && (
-                                                <span className="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded">Urgente</span>
+                                                <span className="text-xs bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400 px-2 py-0.5 rounded">Urgente</span>
                                             )}
                                         </p>
                                         <p className="text-sm text-muted-foreground">{solicitud.cliente} - {solicitud.tipo}</p>
                                     </div>
-                                    <Button size="sm" variant="outline">Asignar</Button>
+                                    <Button size="sm">Asignar</Button>
                                 </div>
                             ))}
                         </div>
-                        <Button asChild className="w-full mt-4" variant="secondary">
+                        <Button asChild className="w-full mt-4">
                             <Link href="/dashboard/solicitudes">Ver Todas</Link>
                         </Button>
                     </CardContent>
@@ -104,9 +104,9 @@ export function DashboardOperacion() {
                                         <p className="font-medium">{inspeccion.id} - {inspeccion.hora}</p>
                                         <p className="text-sm text-muted-foreground">{inspeccion.inspector}</p>
                                     </div>
-                                    <span className={`text-xs px-2 py-1 rounded-full ${inspeccion.estado === "completada" ? "bg-green-100 text-green-800" :
-                                            inspeccion.estado === "en_curso" ? "bg-blue-100 text-blue-800" :
-                                                "bg-yellow-100 text-yellow-800"
+                                    <span className={`text-xs px-2 py-1 rounded-full ${inspeccion.estado === "completada" ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400" :
+                                        inspeccion.estado === "en_curso" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400" :
+                                            "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
                                         }`}>
                                         {inspeccion.estado === "completada" ? "Completada" :
                                             inspeccion.estado === "en_curso" ? "En Curso" : "Pendiente"}
@@ -114,7 +114,7 @@ export function DashboardOperacion() {
                                 </div>
                             ))}
                         </div>
-                        <Button asChild className="w-full mt-4" variant="secondary">
+                        <Button asChild className="w-full mt-4">
                             <Link href="/dashboard/calendario">Ver Calendario</Link>
                         </Button>
                     </CardContent>
@@ -129,15 +129,15 @@ export function DashboardOperacion() {
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-3">
-                        <div className="flex items-start gap-3 p-3 bg-yellow-50 rounded-lg">
-                            <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+                        <div className="flex items-start gap-3 p-3 bg-yellow-50 dark:bg-yellow-900/10 rounded-lg">
+                            <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
                             <div>
                                 <p className="font-medium text-sm">Reprogramación solicitada</p>
                                 <p className="text-xs text-muted-foreground">SOL-014 - Cliente solicita cambio de fecha por clima</p>
                             </div>
                         </div>
-                        <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
-                            <ClipboardCheck className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <div className="flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg">
+                            <ClipboardCheck className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
                             <div>
                                 <p className="font-medium text-sm">Informe pendiente de revisión</p>
                                 <p className="text-xs text-muted-foreground">INS-042 - Requiere aprobación antes de enviar al cliente</p>
