@@ -4,7 +4,7 @@ import { DashboardCliente } from "@/components/dashboard/dashboard-cliente";
 import { DashboardOperacion } from "@/components/dashboard/dashboard-operacion";
 import { useUserType } from "@/hooks/use-user-type";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UserTypeDebug } from "@/components/debug/user-type-debug";
+// import { UserTypeDebug } from "@/components/debug/user-type-debug";
 
 export default function DashboardPage() {
     const { userType, loading } = useUserType();
@@ -27,7 +27,7 @@ export default function DashboardPage() {
     return (
         <div className="flex flex-col gap-4">
             {/* Debug component - remover en producción */}
-            <UserTypeDebug />
+            {/* <UserTypeDebug /> */}
 
             {userType === "cliente" ? <DashboardCliente /> : <DashboardOperacion />}
         </div>
