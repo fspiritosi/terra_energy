@@ -54,6 +54,7 @@ export function LoginForm({
           alt="Terra Energy Services"
           className="h-24 w-auto"
           height={96}
+          width={96}
         />
       </div>
       <Card>

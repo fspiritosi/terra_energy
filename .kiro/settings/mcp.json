@@ -1,4 +1,25 @@
 {
   "mcpServers": {
+        "supabase-terra": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        // "--read-only",
+        "--project-ref=ingqobrevncfgofvyobg"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "sbp_47a6ed4ea39b61032b85ff24335309fe9ff5c6a9"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "get_project_url",
+        "execute_sql",
+        "list_extensions",
+        "list_tables"
+      ]
+    }
   }
 }

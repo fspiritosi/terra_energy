@@ -3,7 +3,9 @@
 import { LogOut, User, Sun, Moon, Laptop } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { ProfileModal } from "@/components/profile";
 
 import {
     Avatar,
@@ -37,6 +39,7 @@ export function NavUser({
     const { isMobile } = useSidebar();
     const router = useRouter();
     const { theme, setTheme } = useTheme();
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
     const handleLogout = async () => {
         const supabase = createClient();
@@ -120,7 +123,7 @@ export function NavUser({
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setIsProfileModalOpen(true)}>
                             <User />
                             Mi Cuenta
                         </DropdownMenuItem>
@@ -154,6 +157,12 @@ export function NavUser({
                     </DropdownMenuContent>
                 </DropdownMenu>
             </SidebarMenuItem>
+
+            <ProfileModal
+                user={user}
+                open={isProfileModalOpen}
+                onOpenChange={setIsProfileModalOpen}
+            />
         </SidebarMenu>
     );
 }

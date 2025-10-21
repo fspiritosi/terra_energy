@@ -12,6 +12,7 @@ export function TeamSwitcher() {
                     alt="Terra Energy Services"
                     className="max-w-32 dark:max-w-32 w-full h-auto object-contain"
                     height={120}
+                    width={120}
                 />
             </div>
         </div>

@@ -19,6 +19,7 @@
 
 # production
 /build
+/.kiro/*
 
 # misc
 .DS_Store
