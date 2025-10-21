@@ -1,5 +1,4 @@
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { hasEnvVars } from "@/lib/utils";
 import Link from "next/link";
 
 export default function Home() {

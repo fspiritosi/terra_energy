@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Image from "next/image";
 
 export function LoginForm({
   className,
@@ -48,10 +49,11 @@ export function LoginForm({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex justify-center mb-8">
-        <img
+        <Image
           src="/Terra Energy Services - logo dorado.png"
           alt="Terra Energy Services"
           className="h-24 w-auto"
+          height={96}
         />
       </div>
       <Card>
