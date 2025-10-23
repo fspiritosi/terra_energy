@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import * as React from "react"
 import { MoreHorizontal, Edit } from "lucide-react"
@@ -19,46 +19,46 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { ClienteForm } from "./cliente-form"
-import { updateCliente, deleteCliente, UpdateClienteData } from "./cliente-actions"
-import { Cliente } from "./actions"
+import {UpdateForm} from "./updateForm"
+import {  TipoDeInspeccionType } from "./actionServer"
 import { toast } from "sonner"
+import { updateTipoDeInspeccion } from "./actionClient"
 
-interface ClienteRowActionsProps {
-    cliente: Cliente
+interface TipoDeInspeccionRowActionsProps {
+    tipoDeInspeccion: TipoDeInspeccionType
 }
 
-export function ClienteRowActions({ cliente }: ClienteRowActionsProps) {
+export function TipoDeInspeccionRowActions({ tipoDeInspeccion }: TipoDeInspeccionRowActionsProps) {
     const [editOpen, setEditOpen] = React.useState(false)
     const [deleteOpen, setDeleteOpen] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(false)
 
-    const handleEdit = async (data: Omit<UpdateClienteData, "id">) => {
-        setIsLoading(true)
-        try {
-            await updateCliente({ ...data, id: cliente.id })
-            toast.success("Cliente actualizado exitosamente")
-        } catch (error) {
-            toast.error("Error al actualizar el cliente")
-            throw error
-        } finally {
-            setIsLoading(false)
-        }
-    }
+    // const handleEdit = async (data: Omit<UpdateTipoDeInspeccionData, "id">) => {
+    //     setIsLoading(true)
+    //     try {
+    //         await updateTipoDeInspeccion({ ...data, id: tipoDeInspeccion.id })
+    //         toast.success("Tipo de inspección actualizado exitosamente")
+    //     } catch (error) {
+    //         toast.error("Error al actualizar el cliente")
+    //         throw error
+    //     } finally {
+    //         setIsLoading(false)
+    //     }
+    // }
 
-    const handleDelete = async () => {
-        setIsLoading(true)
-        try {
-            await deleteCliente(cliente.id)
-            toast.success("Cliente eliminado exitosamente")
-            setDeleteOpen(false)
-        } catch (error) {
-            console.error(error)
-            toast.error("Error al eliminar el cliente")
-        } finally {
-            setIsLoading(false)
-        }
-    }
+    // const handleDelete = async () => {
+    //     setIsLoading(true)
+    //     try {
+    //         await deleteCliente(cliente.id)
+    //         toast.success("Cliente eliminado exitosamente")
+    //         setDeleteOpen(false)
+    //     } catch (error) {
+    //         console.error(error)
+    //         toast.error("Error al eliminar el cliente")
+    //     } finally {
+    //         setIsLoading(false)
+    //     }
+    // }
 
     return (
         <>
@@ -82,27 +82,20 @@ export function ClienteRowActions({ cliente }: ClienteRowActionsProps) {
                 </DropdownMenuContent>
             </DropdownMenu>
 
-            <ClienteForm
-                open={editOpen}
-                onOpenChange={setEditOpen}
-                cliente={cliente}
-                onSubmit={handleEdit}
-                isLoading={isLoading}
-            />
-
+            <UpdateForm />
             <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
                         <AlertDialogDescription>
                             Esta acción no se puede deshacer. Se eliminará permanentemente el cliente{" "}
-                            <strong>{cliente.nombre}</strong> y todos sus datos asociados.
+                            <strong>{tipoDeInspeccion?.nombre}</strong> y todos sus datos asociados.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={isLoading}>Cancelar</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={handleDelete}
+                           // onClick={handleDelete}
                             disabled={isLoading}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >

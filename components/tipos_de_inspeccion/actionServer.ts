@@ -17,7 +17,7 @@ export async function getTipoDeInspeccion() {
     }
 }
 
-export type TipoDeInspeccionType = Awaited<ReturnType<typeof getTipoDeInspeccion>>;
+export type TipoDeInspeccionType = Awaited<ReturnType<typeof getTipoDeInspeccion>>[0];
     
 export async function createTipoDeInspeccion(tipoDeInspeccion: Database['public']['Tables']['tipo_de_inspeccion']['Insert']) {
     const supabase = await createClient();

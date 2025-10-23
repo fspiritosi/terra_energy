@@ -65,7 +65,7 @@ export const operacionNavItems: NavItem[] = [
     title: "Inspecciones",
     url: "/dashboard/inspecciones",
     icon: ClipboardCheck,
-    disabled: true,
+    disabled: false,
   },
   {
     title: "Clientes",
