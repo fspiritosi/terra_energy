@@ -19,10 +19,10 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import {UpdateForm} from "./updateForm"
 import {  TipoDeInspeccionType } from "./actionServer"
 import { toast } from "sonner"
-import { updateTipoDeInspeccion } from "./actionClient"
+import { updateTipoDeInspeccion, deleteTipoDeInspeccion, UpdateTipoDeInspeccionData } from "./actionClient"
+import { TipoDeInspeccionForm } from "./tipe-inspection-form"
 
 interface TipoDeInspeccionRowActionsProps {
     tipoDeInspeccion: TipoDeInspeccionType
@@ -33,32 +33,32 @@ export function TipoDeInspeccionRowActions({ tipoDeInspeccion }: TipoDeInspeccio
     const [deleteOpen, setDeleteOpen] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(false)
 
-    // const handleEdit = async (data: Omit<UpdateTipoDeInspeccionData, "id">) => {
-    //     setIsLoading(true)
-    //     try {
-    //         await updateTipoDeInspeccion({ ...data, id: tipoDeInspeccion.id })
-    //         toast.success("Tipo de inspección actualizado exitosamente")
-    //     } catch (error) {
-    //         toast.error("Error al actualizar el cliente")
-    //         throw error
-    //     } finally {
-    //         setIsLoading(false)
-    //     }
-    // }
+    const handleEdit = async (data: Omit<UpdateTipoDeInspeccionData, "id">) => {
+        setIsLoading(true)
+        try {
+            await updateTipoDeInspeccion(tipoDeInspeccion.id, { ...data })
+            toast.success("Tipo de inspección actualizado exitosamente")
+        } catch (error) {
+            toast.error("Error al actualizar el tipo de inspección")
+            throw error
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
-    // const handleDelete = async () => {
-    //     setIsLoading(true)
-    //     try {
-    //         await deleteCliente(cliente.id)
-    //         toast.success("Cliente eliminado exitosamente")
-    //         setDeleteOpen(false)
-    //     } catch (error) {
-    //         console.error(error)
-    //         toast.error("Error al eliminar el cliente")
-    //     } finally {
-    //         setIsLoading(false)
-    //     }
-    // }
+    const handleDelete = async () => {
+        setIsLoading(true)
+        try {
+            await deleteTipoDeInspeccion(tipoDeInspeccion.id)
+            toast.success("Tipo de inspección eliminado exitosamente")
+            setDeleteOpen(false)
+        } catch (error) {
+            console.error(error)
+            toast.error("Error al eliminar el tipo de inspección")
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     return (
         <>
@@ -82,7 +82,14 @@ export function TipoDeInspeccionRowActions({ tipoDeInspeccion }: TipoDeInspeccio
                 </DropdownMenuContent>
             </DropdownMenu>
 
-            <UpdateForm />
+           
+                       <TipoDeInspeccionForm
+                           open={editOpen}
+                           onOpenChange={setEditOpen}
+                           tipoDeInspeccion={tipoDeInspeccion}
+                           onSubmit={handleEdit}
+                           isLoading={isLoading}
+                       />
             <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
@@ -95,7 +102,7 @@ export function TipoDeInspeccionRowActions({ tipoDeInspeccion }: TipoDeInspeccio
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={isLoading}>Cancelar</AlertDialogCancel>
                         <AlertDialogAction
-                           // onClick={handleDelete}
+                           onClick={handleDelete}
                             disabled={isLoading}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >

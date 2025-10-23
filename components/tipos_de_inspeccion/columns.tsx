@@ -70,6 +70,6 @@ export const columns: ColumnDef<TipoDeInspeccionType>[] = [
     },
     {
         id: "actions",
-        cell: ({ row }) => <TipoDeInspeccionRowActions row={row} />,
+        cell: ({ row }) => <TipoDeInspeccionRowActions tipoDeInspeccion={row.original} />,
     },
 ]

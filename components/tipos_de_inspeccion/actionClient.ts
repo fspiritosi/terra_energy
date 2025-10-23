@@ -1,5 +1,6 @@
 import { Database } from "@/database.types";
 import { createClient } from "@/lib/supabase/client";
+import { getTipoDeInspeccion } from "./actionServer";
 
 export async function createTipoDeInspeccion(tipoDeInspeccion: Database['public']['Tables']['tipo_de_inspeccion']['Insert']) {
     const supabase =  createClient();
@@ -23,3 +24,18 @@ export async function updateTipoDeInspeccion(id: string, tipoDeInspeccion: Datab
         return { error } as any;
     }
 }
+
+export type UpdateTipoDeInspeccionData = Omit<Awaited<ReturnType<typeof updateTipoDeInspeccion>>[0], "id">;
+
+
+export async function deleteTipoDeInspeccion(id: string) {
+    const supabase = createClient();
+    try {       
+        const response = await supabase.from("tipo_de_inspeccion").delete().eq("id", id);
+        return response;
+    } catch (error) {
+        console.log(error); 
+        return { error } as any;
+    }
+}
+    
