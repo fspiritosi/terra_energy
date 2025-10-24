@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -31,6 +30,7 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Cliente } from "./actions"
+import { useEffect } from "react"
 
 const clienteSchema = z.object({
     nombre: z.string().min(1, "El nombre es requerido"),
@@ -75,7 +75,7 @@ export function ClienteForm({
     })
 
     // Resetear el formulario cuando cambie el cliente o se abra/cierre el modal
-    React.useEffect(() => {
+    useEffect(() => {
         if (open) {
             if (cliente) {
                 form.reset({

@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { DataTable } from "@/components/tables/data-table"
 import { columns } from "./columns"
 import { Usuario } from "./actions"
@@ -24,6 +25,20 @@ interface UsuariosTableProps {
 }
 
 export function UsuariosTable({ data }: UsuariosTableProps) {
+    // Generar opciones de clientes únicos de los datos
+    const clientesOptions = React.useMemo(() => {
+        const clientesSet = new Set<string>()
+        data.forEach(usuario => {
+            usuario.clientes?.forEach(cliente => {
+                clientesSet.add(cliente.nombre)
+            })
+        })
+        return Array.from(clientesSet).sort().map(nombre => ({
+            value: nombre,
+            label: nombre
+        }))
+    }, [data])
+
     // Función de filtro personalizada para buscar por nombre, email o clientes
     const customSearchFilter = (usuario: Usuario, searchValue: string): boolean => {
         if (!searchValue) return true
@@ -46,6 +61,11 @@ export function UsuariosTable({ data }: UsuariosTableProps) {
             searchPlaceholder="Buscar por nombre, email o cliente..."
             customSearchFilter={customSearchFilter}
             filters={[
+                {
+                    columnKey: "clientes",
+                    title: "Cliente",
+                    options: clientesOptions,
+                },
                 {
                     columnKey: "is_active",
                     title: "Estado",

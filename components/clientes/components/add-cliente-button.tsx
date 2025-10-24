@@ -1,15 +1,15 @@
 "use client"
 
-import * as React from "react"
 import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ClienteForm } from "./cliente-form"
 import { createCliente, CreateClienteData } from "./cliente-actions"
 import { toast } from "sonner"
+import { useState } from "react"
 
 export function AddClienteButton() {
-    const [open, setOpen] = React.useState(false)
-    const [isLoading, setIsLoading] = React.useState(false)
+    const [open, setOpen] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     const handleSubmit = async (data: CreateClienteData) => {
         setIsLoading(true)

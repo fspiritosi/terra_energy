@@ -1,17 +1,11 @@
 "use server";
 
+import { Database } from "@/database.types";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-export type CreateClienteData = {
-  nombre: string;
-  cuit: string;
-  email?: string;
-  telefono?: string;
-  direccion?: string;
-  moneda: "ARS" | "USD";
-  is_active: boolean;
-};
+export type CreateClienteData =
+  Database["public"]["Tables"]["clientes"]["Insert"];
 
 export type UpdateClienteData = CreateClienteData & {
   id: string;

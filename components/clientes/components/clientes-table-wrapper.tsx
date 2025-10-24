@@ -1,4 +1,3 @@
-import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ClientesTable } from './clientes-table'
 import { AddClienteButton } from './add-cliente-button'

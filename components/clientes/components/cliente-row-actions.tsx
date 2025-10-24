@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { MoreHorizontal, Edit } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,15 +22,16 @@ import { ClienteForm } from "./cliente-form"
 import { updateCliente, deleteCliente, UpdateClienteData } from "./cliente-actions"
 import { Cliente } from "./actions"
 import { toast } from "sonner"
+import { useState } from "react"
 
 interface ClienteRowActionsProps {
     cliente: Cliente
 }
 
 export function ClienteRowActions({ cliente }: ClienteRowActionsProps) {
-    const [editOpen, setEditOpen] = React.useState(false)
-    const [deleteOpen, setDeleteOpen] = React.useState(false)
-    const [isLoading, setIsLoading] = React.useState(false)
+    const [editOpen, setEditOpen] = useState(false)
+    const [deleteOpen, setDeleteOpen] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     const handleEdit = async (data: Omit<UpdateClienteData, "id">) => {
         setIsLoading(true)
