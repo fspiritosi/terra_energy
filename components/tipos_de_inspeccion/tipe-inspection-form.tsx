@@ -110,7 +110,7 @@ export function TipoDeInspeccionForm({
                 </DialogHeader>
 
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4" data-testid="tipo-inspeccion-form">
                         <div className="grid grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
@@ -119,7 +119,7 @@ export function TipoDeInspeccionForm({
                                     <FormItem className="col-span-2">
                                         <FormLabel>Nombre *</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Nombre del tipo de inspección" {...field} />
+                                            <Input placeholder="Nombre del tipo de inspección" {...field} data-testid="input-nombre" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -133,7 +133,7 @@ export function TipoDeInspeccionForm({
                                     <FormItem className="col-span-2">
                                         <FormLabel>Codigo *</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="INS-001" {...field} />
+                                            <Input placeholder="INS-001" {...field} data-testid="input-codigo" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -151,6 +151,7 @@ export function TipoDeInspeccionForm({
                                                 type="text"
                                                 placeholder="descripcion"
                                                 {...field}
+                                                data-testid="input-descripcion"
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -173,6 +174,7 @@ export function TipoDeInspeccionForm({
                                             <Switch
                                                 checked={field.value}
                                                 onCheckedChange={field.onChange}
+                                                data-testid="switch-activo"
                                             />
                                         </FormControl>
                                     </FormItem>
@@ -186,10 +188,11 @@ export function TipoDeInspeccionForm({
                                 variant="outline"
                                 onClick={() => onOpenChange(false)}
                                 disabled={isLoading}
+                                data-testid="btn-cancelar"
                             >
                                 Cancelar
                             </Button>
-                            <Button type="submit" disabled={isLoading}>
+                            <Button type="submit" disabled={isLoading} data-testid="btn-guardar">
                                 {isLoading
                                     ? "Guardando..."
                                     : isEditing

@@ -67,6 +67,7 @@ export function TipoDeInspeccionRowActions({ tipoDeInspeccion }: TipoDeInspeccio
                     <Button
                         variant="ghost"
                         className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                        data-testid="row-actions-trigger"
                     >
                         <MoreHorizontal className="h-4 w-4" />
                         <span className="sr-only">Abrir menú</span>
@@ -74,9 +75,13 @@ export function TipoDeInspeccionRowActions({ tipoDeInspeccion }: TipoDeInspeccio
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[160px]">
 
-                    <DropdownMenuItem onClick={() => setEditOpen(true)}>
+                    <DropdownMenuItem onClick={() => setEditOpen(true)} data-testid="edit-type-inspeccion">
                         <Edit className="mr-2 h-4 w-4" />
                         Editar
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem onClick={() => setDeleteOpen(true)} data-testid="delete-type-inspeccion">
+                        Eliminar
                     </DropdownMenuItem>
 
                 </DropdownMenuContent>
@@ -105,6 +110,7 @@ export function TipoDeInspeccionRowActions({ tipoDeInspeccion }: TipoDeInspeccio
                            onClick={handleDelete}
                             disabled={isLoading}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            data-testid="confirm-delete-type-inspeccion"
                         >
                             {isLoading ? "Eliminando..." : "Eliminar"}
                         </AlertDialogAction>

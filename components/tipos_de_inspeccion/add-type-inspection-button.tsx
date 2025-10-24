@@ -31,7 +31,7 @@ export function AddTypeInspectionButton() {
 
     return (
         <>
-            <Button onClick={() => setOpen(true)}>
+            <Button onClick={() => setOpen(true)} data-testid="add-type-inspeccion">
                 <Plus className="mr-2 h-4 w-4" />
                 Agregar Tipo de Inspección
             </Button>
