@@ -12,7 +12,7 @@ Asegúrate de tener estas variables en tu archivo `.env.local`:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=tu_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_anon_key
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=tu_anon_key
 SUPABASE_SERVICE_ROLE_KEY=tu_service_role_key
 ```
 
