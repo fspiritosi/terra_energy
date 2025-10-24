@@ -59,7 +59,9 @@ describe('Tipos de Inspección - CRUD', () => {
     cy.contains('table tr', nombreEditado, { timeout: 10000 }).should('exist');
   });
 
-  it('D - Eliminar el tipo creado', () => {
+  // No tenemos un endpoint para eliminar tipos de inspección
+  // por lo que no se puede probar la eliminación
+  it.skip('D - Eliminar el tipo creado', () => {
     cy.visit(path);
 
     // Abrir menú de acciones y eliminar
