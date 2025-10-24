@@ -54,7 +54,7 @@ export function DataTableToolbar<TData>({
                             table.getColumn(searchKey)?.setFilterValue(value)
                         }
                     }}
-                    className="h-8 w-[150px] lg:w-[250px]"
+                    className="h-8 w-[150px] lg:w-[250px] ring-1 ring-muted"
                 />
                 {filters.map((filter) => {
                     const column = table.getColumn(filter.columnKey)
