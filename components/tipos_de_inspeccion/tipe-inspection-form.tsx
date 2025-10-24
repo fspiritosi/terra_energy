@@ -24,8 +24,8 @@ import {
 import { Input } from "@/components/ui/input"
 
 import { Switch } from "@/components/ui/switch"
-import { updateTipoDeInspeccion, createTipoDeInspeccion } from "./actionClient"
-import { TipoDeInspeccionType } from "./actionServer"
+import { updateTipoDeInspeccion, createTipoDeInspeccion } from "./actions"
+import { TipoDeInspeccionType } from "./actions"
 
 
 
@@ -100,12 +100,12 @@ export function TipoDeInspeccionForm({
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>
-                        {isEditing ? "Editar Cliente" : "Crear Nuevo Cliente"}
+                        {isEditing ? "Editar Tipo de Inspección" : "Crear Nuevo Tipo de Inspección"}
                     </DialogTitle>
                     <DialogDescription>
                         {isEditing
-                            ? "Modifica los datos del cliente."
-                            : "Completa los datos para crear un nuevo cliente."}
+                            ? "Modifica los datos del tipo de inspección."
+                            : "Completa los datos para crear un nuevo tipo de inspección."}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -119,7 +119,7 @@ export function TipoDeInspeccionForm({
                                     <FormItem className="col-span-2">
                                         <FormLabel>Nombre *</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Nombre del cliente" {...field} />
+                                            <Input placeholder="Nombre del tipo de inspección" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -133,7 +133,7 @@ export function TipoDeInspeccionForm({
                                     <FormItem className="col-span-2">
                                         <FormLabel>Codigo *</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="20-12345678-9" {...field} />
+                                            <Input placeholder="INS-001" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -144,7 +144,7 @@ export function TipoDeInspeccionForm({
                                 control={form.control}
                                 name="descripcion"
                                 render={({ field }) => (
-                                    <FormItem>
+                                    <FormItem className="col-span-2">
                                         <FormLabel>Descripcion</FormLabel>
                                         <FormControl>
                                             <Input

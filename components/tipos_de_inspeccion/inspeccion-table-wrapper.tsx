@@ -1,4 +1,4 @@
-import { getTipoDeInspeccion } from "./actionServer";
+import { getTipoDeInspeccion } from "./actions";
 import { InspeccionesTipoTable } from "./inspeccionesTipoTable";
 
 export async function ListTable() {

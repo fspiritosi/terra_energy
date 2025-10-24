@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
-import { TipoDeInspeccionType } from "./actionServer"
+import { TipoDeInspeccionType } from "./actions"
 import { TipoDeInspeccionRowActions } from "./TipoDeInspeccionRowActions "
 
 export const columns: ColumnDef<TipoDeInspeccionType>[] = [

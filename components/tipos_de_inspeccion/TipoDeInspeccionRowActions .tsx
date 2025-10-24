@@ -19,9 +19,9 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import {  TipoDeInspeccionType } from "./actionServer"
+import {  TipoDeInspeccionType } from "./actions"
 import { toast } from "sonner"
-import { updateTipoDeInspeccion, deleteTipoDeInspeccion, UpdateTipoDeInspeccionData } from "./actionClient"
+import { updateTipoDeInspeccion, deleteTipoDeInspeccion, UpdateTipoDeInspeccionData } from "./actions"
 import { TipoDeInspeccionForm } from "./tipe-inspection-form"
 
 interface TipoDeInspeccionRowActionsProps {

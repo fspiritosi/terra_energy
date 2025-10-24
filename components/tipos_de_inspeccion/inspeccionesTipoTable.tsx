@@ -2,7 +2,7 @@
 
 import { DataTable } from "@/components/tables/data-table"
 import {columns} from './columns'
-import { TipoDeInspeccionType } from "./actionServer"
+import { TipoDeInspeccionType } from "./actions"
 
 // Opciones para filtros
 
@@ -32,6 +32,7 @@ export function InspeccionesTipoTable({ data }: InspeccionesTipoTableProps) {
             columns={columns}
             data={data}
             searchKey="nombre"
+            searchPlaceholder="Buscar por nombre, codigo o descripcion..."
             customSearchFilter={customSearchFilter}
             filters={[
                 {
