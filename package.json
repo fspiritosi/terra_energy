@@ -6,7 +6,10 @@
     "start": "next start",
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
-    "gentypes": "npx supabase gen types typescript --project-id ingqobrevncfgofvyobg --schema public > database.types.ts"
+    "gentypes": "npx supabase gen types typescript --project-id ingqobrevncfgofvyobg --schema public > database.types.ts",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "test:e2e": "cypress run"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -47,6 +50,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.20",
+    "cypress": "^15.5.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
     "postcss": "^8",
