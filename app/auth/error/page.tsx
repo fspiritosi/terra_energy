@@ -18,6 +18,8 @@ export default async function AuthErrorPage({
     const { message } = await searchParams;
     const errorMessage = message || "Ha ocurrido un error de autenticación";
 
+    console.log("🚨 [ERROR PAGE] Mensaje de error recibido:", { message, errorMessage });
+
     return (
         <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
             <div className="w-full max-w-sm">

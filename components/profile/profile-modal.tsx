@@ -14,19 +14,31 @@ interface ProfileModalProps {
     user: TypeUser | null;
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    showPasswordSection?: boolean;
 }
 
-export function ProfileModal({ user, open, onOpenChange }: ProfileModalProps) {
+export function ProfileModal({ user, open, onOpenChange, showPasswordSection = false }: ProfileModalProps) {
+    const needsPasswordChange = user?.user_metadata?.needs_password_change === true;
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Mi Cuenta</DialogTitle>
+                    <DialogTitle>
+                        {needsPasswordChange ? "Configurar Cuenta" : "Mi Cuenta"}
+                    </DialogTitle>
                     <DialogDescription>
-                        Actualiza tu información personal y foto de perfil.
+                        {needsPasswordChange
+                            ? "Completa la configuración de tu cuenta cambiando tu contraseña temporal."
+                            : "Actualiza tu información personal y foto de perfil."
+                        }
                     </DialogDescription>
                 </DialogHeader>
-                <ProfileForm user={user} onSuccess={() => onOpenChange(false)} />
+                <ProfileForm
+                    user={user}
+                    onSuccess={() => onOpenChange(false)}
+                    showPasswordSection={showPasswordSection}
+                />
             </DialogContent>
         </Dialog>
     );

@@ -40,6 +40,8 @@ export async function createUsuario(data: CreateUsuarioData) {
           full_name: data.nombre,
           avatar_url: data.avatar_url || "",
           user_type: "cliente", // Metadata para identificar tipo de usuario
+          needs_password_change: true, // Flag para indicar que debe cambiar contraseña por defecto
+          default_password: "terra123", // Referencia de la contraseña por defecto
         },
         redirectTo: `${
           process.env.NEXT_PUBLIC_SITE_URL || "https://terra-energy.vercel.app"

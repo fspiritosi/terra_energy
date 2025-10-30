@@ -26,46 +26,13 @@ export function ResetPasswordClient() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [isValidSession, setIsValidSession] = useState(false);
-    const [isCheckingSession, setIsCheckingSession] = useState(true);
 
     const router = useRouter();
     const supabase = createClient();
 
     useEffect(() => {
-        // Check if user has a valid session (came from email link)
-        const checkSession = async () => {
-            try {
-                const { data: { session } } = await supabase.auth.getSession();
-                console.log("Session check:", session);
-
-                if (session) {
-                    setIsValidSession(true);
-                } else {
-                    // Wait a bit more and try again
-                    setTimeout(async () => {
-                        const { data: { session: retrySession } } = await supabase.auth.getSession();
-                        console.log("Retry session check:", retrySession);
-
-                        if (retrySession) {
-                            setIsValidSession(true);
-                        } else {
-                            // If still no session, redirect to forgot password
-                            router.push("/auth/forgot-password");
-                        }
-                        setIsCheckingSession(false);
-                    }, 2000);
-                    return;
-                }
-            } catch (error) {
-                console.error("Error checking session:", error);
-                router.push("/auth/forgot-password");
-            }
-            setIsCheckingSession(false);
-        };
-
-        checkSession();
-    }, [router, supabase.auth]);
+        console.log("🔄 [RESET] Componente montado, listo para cambiar contraseña");
+    }, []);
 
     const handleResetPassword = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -87,12 +54,32 @@ export function ResetPasswordClient() {
         }
 
         try {
-            const { error } = await supabase.auth.updateUser({
+            console.log("🔐 [RESET] Intentando actualizar contraseña...");
+
+            const { data, error } = await supabase.auth.updateUser({
                 password: password
             });
 
-            if (error) throw error;
+            console.log("📊 [RESET] Resultado updateUser:", {
+                hasData: !!data,
+                hasUser: !!data?.user,
+                error: error?.message
+            });
 
+            if (error) {
+                // Si el error es de autenticación, mostrar mensaje específico
+                if (error.message.includes('session') || error.message.includes('authenticated')) {
+                    setError("Tu sesión ha expirado. Por favor, solicita un nuevo enlace de recuperación.");
+                    setTimeout(() => {
+                        router.push("/auth/forgot-password");
+                    }, 3000);
+                } else {
+                    throw error;
+                }
+                return;
+            }
+
+            console.log("✅ [RESET] Contraseña actualizada exitosamente");
             setSuccess("Contraseña actualizada exitosamente");
 
             // Redirect to dashboard after 2 seconds
@@ -101,70 +88,14 @@ export function ResetPasswordClient() {
             }, 2000);
 
         } catch (error) {
+            console.error("❌ [RESET] Error al actualizar contraseña:", error);
             setError((error as AuthError).message || "Error al actualizar la contraseña");
         } finally {
             setIsLoading(false);
         }
     };
 
-    if (isCheckingSession) {
-        return (
-            <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-                <div className="w-full max-w-sm">
-                    <div className="flex justify-center mb-8">
-                        <Image
-                            src="/Terra Energy Services - logo dorado.png"
-                            alt="Terra Energy Services"
-                            className="h-24 w-auto"
-                            height={96}
-                            width={96}
-                        />
-                    </div>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-2xl">Verificando sesión...</CardTitle>
-                            <CardDescription>
-                                Validando tu enlace de recuperación
-                            </CardDescription>
-                        </CardHeader>
-                    </Card>
-                </div>
-            </div>
-        );
-    }
 
-    if (!isValidSession) {
-        return (
-            <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-                <div className="w-full max-w-sm">
-                    <div className="flex justify-center mb-8">
-                        <Image
-                            src="/Terra Energy Services - logo dorado.png"
-                            alt="Terra Energy Services"
-                            className="h-24 w-auto"
-                            height={96}
-                            width={96}
-                        />
-                    </div>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-2xl">Sesión no válida</CardTitle>
-                            <CardDescription>
-                                El enlace de recuperación ha expirado o no es válido
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Button asChild className="w-full">
-                                <Link href="/auth/forgot-password">
-                                    Solicitar nuevo enlace
-                                </Link>
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
