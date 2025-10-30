@@ -27,7 +27,6 @@ export const clienteNavItems: NavItem[] = [
     title: "Mis Solicitudes",
     url: "/dashboard/solicitudes",
     icon: FileText,
-    disabled: true,
   },
   {
     title: "Nueva Solicitud",
@@ -50,10 +49,9 @@ export const operacionNavItems: NavItem[] = [
     icon: LayoutDashboard,
   },
   {
-    title: "Solicitudes Pendientes",
+    title: "Solicitudes de Inspección",
     url: "/dashboard/solicitudes",
     icon: FileText,
-    disabled: true,
   },
   {
     title: "Calendario",

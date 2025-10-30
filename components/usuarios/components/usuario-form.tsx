@@ -133,12 +133,12 @@ export function UsuarioForm({
             <DialogContent className="sm:max-w-[600px] max-h-[90vh]">
                 <DialogHeader>
                     <DialogTitle>
-                        {isEditing ? "Editar Usuario" : "Crear Nuevo Usuario"}
+                        {isEditing ? "Editar Usuario" : "Invitar Nuevo Usuario"}
                     </DialogTitle>
                     <DialogDescription>
                         {isEditing
                             ? "Modifica las asignaciones de clientes y el estado del usuario. Los datos personales no se pueden editar desde aquí."
-                            : "Completa los datos para crear un nuevo usuario y asignarlo a clientes."}
+                            : "Completa los datos para enviar una invitación por email al nuevo usuario."}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -312,10 +312,10 @@ export function UsuarioForm({
                         disabled={isLoading}
                     >
                         {isLoading
-                            ? "Guardando..."
+                            ? (isEditing ? "Guardando..." : "Enviando invitación...")
                             : isEditing
                                 ? "Actualizar Usuario"
-                                : "Crear Usuario"}
+                                : "Enviar Invitación"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

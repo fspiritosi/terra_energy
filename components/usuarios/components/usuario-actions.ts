@@ -33,33 +33,33 @@ export interface UpdateUsuarioData {
 
 export async function createUsuario(data: CreateUsuarioData) {
   try {
-    // 1. Crear usuario en auth con Supabase Admin
+    // 1. Invitar usuario por email (esto enviará el email de invitación)
     const { data: authUser, error: authError } =
-      await supabaseAdmin.auth.admin.createUser({
-        email: data.email,
-        email_confirm: true, // Auto-confirmar email
-        password: "terra123",
-        user_metadata: {
+      await supabaseAdmin.auth.admin.inviteUserByEmail(data.email!, {
+        data: {
           full_name: data.nombre,
           avatar_url: data.avatar_url || "",
           user_type: "cliente", // Metadata para identificar tipo de usuario
         },
+        redirectTo: `${
+          process.env.NEXT_PUBLIC_SITE_URL || "https://terra-energy.vercel.app"
+        }/auth/confirm?type=invite&next=/dashboard`,
       });
 
     if (authError) {
-      console.error("Error creating auth user:", authError);
-      throw new Error(`Error al crear usuario: ${authError.message}`);
+      console.error("Error inviting user:", authError);
+      throw new Error(`Error al invitar usuario: ${authError.message}`);
     }
 
     if (!authUser.user) {
-      throw new Error("No se pudo crear el usuario");
+      throw new Error("No se pudo invitar al usuario");
     }
 
     // 2. Crear relaciones con clientes
     const supabase = await createServerClient();
 
     const relaciones = data.clienteIds.map((clienteId) => ({
-      user_id: authUser.user.id, // Usar el mismo ID del usuario de auth
+      user_id: authUser.user.id, // Usar el mismo ID del usuario invitado
       cliente_id: clienteId,
       is_active: data.is_active,
     }));
@@ -69,14 +69,18 @@ export async function createUsuario(data: CreateUsuarioData) {
       .insert(relaciones);
 
     if (relationError) {
-      // Si falla la creación de relaciones, eliminar el usuario de auth
+      // Si falla la creación de relaciones, eliminar el usuario invitado
       await supabaseAdmin.auth.admin.deleteUser(authUser.user.id);
       console.error("Error creating user relations:", relationError);
       throw new Error(`Error al crear relaciones: ${relationError.message}`);
     }
 
     revalidatePath("/dashboard/usuarios");
-    return { success: true, userId: authUser.user.id };
+    return {
+      success: true,
+      userId: authUser.user.id,
+      message: "Invitación enviada exitosamente",
+    };
   } catch (error) {
     console.error("Error in createUsuario:", error);
     throw error;

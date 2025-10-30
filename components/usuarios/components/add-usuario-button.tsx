@@ -23,10 +23,10 @@ export function AddUsuarioButton() {
     const handleSubmit = async (data: CreateUsuarioData) => {
         setIsLoading(true)
         try {
-            await createUsuario(data)
-            toast.success("Usuario creado exitosamente")
+            const result = await createUsuario(data)
+            toast.success("Invitación enviada exitosamente al usuario")
         } catch (error) {
-            toast.error("Error al crear el usuario")
+            toast.error("Error al enviar la invitación")
             throw error
         } finally {
             setIsLoading(false)
@@ -37,7 +37,7 @@ export function AddUsuarioButton() {
         <>
             <Button onClick={() => setOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
-                Agregar Usuario
+                Invitar Usuario
             </Button>
             <UsuarioForm
                 open={open}

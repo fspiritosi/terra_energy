@@ -1,13 +1,12 @@
 {
   "mcpServers": {
-        "supabase-terra": {
+    "supabase-terra": {
       "command": "cmd",
       "args": [
         "/c",
         "npx",
         "-y",
         "@supabase/mcp-server-supabase@latest",
-        // "--read-only",
         "--project-ref=ingqobrevncfgofvyobg"
       ],
       "env": {
@@ -18,7 +17,9 @@
         "get_project_url",
         "execute_sql",
         "list_extensions",
-        "list_tables"
+        "list_tables",
+        "get_logs",
+        "search_docs"
       ]
     }
   }
