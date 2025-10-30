@@ -11,10 +11,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
+import { AuthError } from "@supabase/supabase-js";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 export default function ResetPasswordPage() {
@@ -28,7 +29,6 @@ export default function ResetPasswordPage() {
     const [isValidSession, setIsValidSession] = useState(false);
 
     const router = useRouter();
-    const searchParams = useSearchParams();
     const supabase = createClient();
 
     useEffect(() => {
@@ -79,8 +79,8 @@ export default function ResetPasswordPage() {
                 router.push("/dashboard");
             }, 2000);
 
-        } catch (error: any) {
-            setError(error.message || "Error al actualizar la contraseña");
+        } catch (error) {
+            setError((error as AuthError).message || "Error al actualizar la contraseña");
         } finally {
             setIsLoading(false);
         }

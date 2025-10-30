@@ -1,4 +1,3 @@
-import React from 'react'
 import { getUsuarios } from './components/actions'
 import { UsuariosTableWrapper } from './components'
 
