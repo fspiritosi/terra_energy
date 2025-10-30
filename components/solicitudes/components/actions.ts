@@ -170,6 +170,84 @@ export async function getItemInspectionTypes() {
   return types || [];
 }
 
+export async function getClienteIdFromUser(): Promise<string | null> {
+  const supabase = await createClient();
+
+  // Obtener el usuario actual
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    console.error("Error getting user:", userError);
+    return null;
+  }
+
+  // Buscar la relación usuario-cliente
+  const { data: usuarioCliente, error } = await supabase
+    .from("usuarios_clientes")
+    .select("cliente_id, clientes(id, nombre)")
+    .eq("user_id", user.id)
+    .eq("is_active", true)
+    .single();
+
+  if (error) {
+    console.error("Error fetching cliente for user:", error);
+    return null;
+  }
+
+  return usuarioCliente?.cliente_id || null;
+}
+
+export async function getClienteInfoFromUser(): Promise<{
+  id: string;
+  nombre: string;
+} | null> {
+  const supabase = await createClient();
+
+  // Obtener el usuario actual
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    console.error("Error getting user:", userError);
+    return null;
+  }
+
+  // Buscar la relación usuario-cliente con información completa
+  const { data: usuarioCliente, error } = await supabase
+    .from("usuarios_clientes")
+    .select(
+      `
+      cliente_id,
+      clientes!inner(
+        id,
+        nombre
+      )
+    `
+    )
+    .eq("user_id", user.id)
+    .eq("is_active", true)
+    .single();
+
+  if (error) {
+    console.error("Error fetching cliente info for user:", error);
+    return null;
+  }
+
+  if (!usuarioCliente?.clientes) {
+    return null;
+  }
+
+  return {
+    id: usuarioCliente.clientes.id,
+    nombre: usuarioCliente.clientes.nombre,
+  };
+}
+
 // Exportar tipos
 export type Solicitud = SolicitudCompleta;
 export type TipoInspeccion = Awaited<ReturnType<typeof getTiposInspeccion>>[0];

@@ -27,6 +27,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { ItemsManager } from "./items-manager"
 import { TrabajosMultiselect } from "./trabajos-multiselect"
 import { useUserType } from "@/hooks/use-user-type"
+import { useUserCliente } from "@/hooks/use-user-cliente"
 import { Solicitud, TipoInspeccion, ClienteOption } from "./actions"
 import { SolicitudItem } from "./solicitud-actions"
 
@@ -68,21 +69,21 @@ export function SolicitudForm({
 }: SolicitudFormProps) {
     const isEditing = !!solicitud
     const { userProfile } = useUserType()
+    const { clienteId: clienteIdFromUser, isLoading: isLoadingClienteId } = useUserCliente()
     const [items, setItems] = React.useState<SolicitudItem[]>([])
 
     // Obtener cliente_id del usuario logueado si es cliente
-    const clienteIdFromUser = React.useMemo(() => {
+    const finalClienteId = React.useMemo(() => {
         if (userProfile?.user_type === "cliente") {
-            // TODO: Obtener cliente_id desde usuarios_clientes
-            return clientes[0]?.id || ""
+            return clienteIdFromUser || ""
         }
         return ""
-    }, [userProfile, clientes])
+    }, [userProfile, clienteIdFromUser])
 
     const form = useForm<SolicitudFormData>({
         resolver: zodResolver(solicitudSchema),
         defaultValues: {
-            cliente_id: clienteIdFromUser,
+            cliente_id: finalClienteId,
             lugar: "",
             responsable: "",
             equipo: "",
@@ -121,7 +122,7 @@ export function SolicitudForm({
             } else {
                 // Modo creación
                 form.reset({
-                    cliente_id: clienteIdFromUser,
+                    cliente_id: finalClienteId,
                     lugar: "",
                     responsable: "",
                     equipo: "",
@@ -133,7 +134,7 @@ export function SolicitudForm({
                 setItems([])
             }
         }
-    }, [open, solicitud, form, clienteIdFromUser])
+    }, [open, solicitud, form, finalClienteId])
 
     // Sincronizar items con el formulario
     React.useEffect(() => {
@@ -204,7 +205,10 @@ export function SolicitudForm({
                                 <div className="bg-muted/50 rounded-lg p-4">
                                     <h3 className="font-medium">Información del Cliente</h3>
                                     <p className="text-sm text-muted-foreground">
-                                        {clientes.find(c => c.id === clienteIdFromUser)?.nombre || "Cliente no encontrado"}
+                                        {isLoadingClienteId
+                                            ? "Cargando información del cliente..."
+                                            : clientes.find(c => c.id === finalClienteId)?.nombre || "Cliente no encontrado"
+                                        }
                                     </p>
                                 </div>
                             )}
