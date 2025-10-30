@@ -5,9 +5,9 @@ import type { AuthError, EmailOtpType } from "@supabase/supabase-js";
 export default async function ConfirmPage({
     searchParams,
 }: {
-    searchParams: { token_hash?: string; type?: string; next?: string };
+    searchParams: Promise<{ token_hash?: string; type?: string; next?: string }>;
 }) {
-    const { token_hash, type, next } = searchParams;
+    const { token_hash, type, next } = await searchParams;
 
     if (token_hash && type) {
         const supabase = await createClient();

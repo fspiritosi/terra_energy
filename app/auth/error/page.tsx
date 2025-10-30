@@ -10,12 +10,13 @@ import { AlertCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function AuthErrorPage({
+export default async function AuthErrorPage({
     searchParams,
 }: {
-    searchParams: { message?: string };
+    searchParams: Promise<{ message?: string }>;
 }) {
-    const errorMessage = searchParams.message || "Ha ocurrido un error de autenticación";
+    const { message } = await searchParams;
+    const errorMessage = message || "Ha ocurrido un error de autenticación";
 
     return (
         <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
