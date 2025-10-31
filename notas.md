@@ -17,13 +17,17 @@
 
 ## 2. ✅ **Botones Aprobar/Rechazar en Modal de Detalles**
 
-**Estado**: 🔄 PENDIENTE
-**Descripción**: Agregar botones de "Aprobar" y "Rechazar" en el modal de detalles de solicitud, en lugar de usar solo los botones de acción de la tabla.
-**Archivos a modificar**:
+**Estado**: ✅ COMPLETADO
+**Descripción**: Agregados botones de "Aprobar" y "Rechazar" en el modal de detalles de solicitud.
+**Cambios realizados**:
 
-- Modal de detalles de solicitud
-- Integrar con server actions existentes: `aprobarSolicitud()` y `rechazarSolicitud()`
-  **Server Actions**: Ya existen y funcionan ✅
+- ✅ Agregados botones "Aprobar" y "Rechazar" en el footer del modal de detalles
+- ✅ Integrados con server actions existentes: `aprobarSolicitud()` y `rechazarSolicitud()`
+- ✅ Los botones solo aparecen cuando la solicitud está en estado "pendiente"
+- ✅ **Restricción por tipo de usuario**: Solo usuarios NO-cliente pueden ver los botones
+- ✅ Integrados con los diálogos de confirmación existentes
+- ✅ Agregadas notificaciones toast para feedback del usuario
+- ✅ Manejo de estados de loading durante las operaciones
 
 ---
 
@@ -59,9 +63,9 @@
 
 ---
 
-## 🎯 **Prioridades Sugeridas**:
+## 🎯 **Todas las tareas completadas** ✅
 
-1. **Alta**: #2 Botones aprobar/rechazar en modal
+No hay tareas pendientes en este momento.
 
 ---
 
@@ -79,3 +83,4 @@
 - ✅ **Fix error fetch cliente**: Corregido error al intentar obtener info de cliente para usuarios no-cliente
 - ✅ **Nomenclatura de solicitudes mejorada**: Cambiado de SOL-2025-001 a SOL-[INICIALES_CLIENTE]-001 (ej: SOL-EDSE-001 para "Empresa Demo S.A.")
 - ✅ **Restricción usuario-cliente**: Cambiado formulario de usuarios para permitir solo UN cliente por usuario (radio buttons en lugar de checkboxes)
+- ✅ **Botones aprobar/rechazar en modal**: Agregados en el modal de detalles de solicitud con integración completa

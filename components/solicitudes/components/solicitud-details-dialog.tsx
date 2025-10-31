@@ -5,13 +5,21 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { CheckCircle, XCircle } from "lucide-react"
 import { Solicitud } from "./actions"
+import { SolicitudApproveDialog } from "./solicitud-approve-dialog"
+import { SolicitudRejectDialog } from "./solicitud-reject-dialog"
+import { aprobarSolicitud, rechazarSolicitud } from "./solicitud-actions"
+import { useUserType } from "@/hooks/use-user-type"
+import { toast } from "sonner"
 import moment from "moment"
 import "moment/locale/es"
 
@@ -42,7 +50,49 @@ export function SolicitudDetailsDialog({
     onOpenChange,
     solicitud,
 }: SolicitudDetailsDialogProps) {
+    const [showApproveDialog, setShowApproveDialog] = React.useState(false)
+    const [showRejectDialog, setShowRejectDialog] = React.useState(false)
+    const [isLoading, setIsLoading] = React.useState(false)
+    const { userProfile } = useUserType()
+
     if (!solicitud) return null
+
+    // Solo usuarios que NO son clientes pueden aprobar/rechazar
+    const canApproveReject = userProfile?.user_type !== "cliente"
+
+    const handleApprove = async (solicitudId: string, comentarios?: string) => {
+        setIsLoading(true)
+        try {
+            await aprobarSolicitud(solicitudId, comentarios)
+            toast.success("Solicitud aprobada exitosamente")
+            setShowApproveDialog(false)
+            // Opcional: cerrar el modal de detalles también
+            // onOpenChange(false)
+        } catch (error) {
+            console.error("Error approving solicitud:", error)
+            toast.error("Error al aprobar la solicitud")
+            throw error
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const handleReject = async (solicitudId: string, comentarios: string) => {
+        setIsLoading(true)
+        try {
+            await rechazarSolicitud(solicitudId, comentarios)
+            toast.success("Solicitud rechazada")
+            setShowRejectDialog(false)
+            // Opcional: cerrar el modal de detalles también
+            // onOpenChange(false)
+        } catch (error) {
+            console.error("Error rejecting solicitud:", error)
+            toast.error("Error al rechazar la solicitud")
+            throw error
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     const formatDate = (dateString: string) => {
         moment.locale('es')
@@ -248,7 +298,52 @@ export function SolicitudDetailsDialog({
                         )}
                     </div>
                 </ScrollArea>
+
+                {/* Footer con botones de acción - Solo mostrar si está pendiente y el usuario puede aprobar/rechazar */}
+                {solicitud.estado === "pendiente" && canApproveReject && (
+                    <DialogFooter className="flex gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => onOpenChange(false)}
+                        >
+                            Cerrar
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setShowRejectDialog(true)}
+                            disabled={isLoading}
+                        >
+                            <XCircle className="mr-2 h-4 w-4" />
+                            Rechazar
+                        </Button>
+                        <Button
+                            onClick={() => setShowApproveDialog(true)}
+                            disabled={isLoading}
+                            className="bg-green-600 hover:bg-green-700"
+                        >
+                            <CheckCircle className="mr-2 h-4 w-4" />
+                            Aprobar
+                        </Button>
+                    </DialogFooter>
+                )}
             </DialogContent>
+
+            {/* Diálogos de aprobación y rechazo */}
+            <SolicitudApproveDialog
+                open={showApproveDialog}
+                onOpenChange={setShowApproveDialog}
+                solicitud={solicitud}
+                onApprove={handleApprove}
+                isLoading={isLoading}
+            />
+
+            <SolicitudRejectDialog
+                open={showRejectDialog}
+                onOpenChange={setShowRejectDialog}
+                solicitud={solicitud}
+                onReject={handleReject}
+                isLoading={isLoading}
+            />
         </Dialog>
     )
 }
