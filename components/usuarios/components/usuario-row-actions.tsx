@@ -43,12 +43,12 @@ export function UsuarioRowActions({ usuario }: UsuarioRowActionsProps) {
         }
     }, [showEditDialog])
 
-    const handleEdit = async (data: { clienteIds: string[]; is_active: boolean }) => {
+    const handleEdit = async (data: { clienteId: string; is_active: boolean }) => {
         setIsLoading(true)
         try {
             await updateUsuario({
                 id: usuario.id!,
-                clienteIds: data.clienteIds,
+                clienteId: data.clienteId,
                 is_active: data.is_active
             })
             toast.success("Usuario actualizado exitosamente")
@@ -122,7 +122,7 @@ export function UsuarioRowActions({ usuario }: UsuarioRowActionsProps) {
                             {usuario.clientes && usuario.clientes.length > 0 && (
                                 <>
                                     <br /><br />
-                                    <strong>Clientes asignados:</strong> {usuario.clientes.map(c => c.nombre).join(", ")}
+                                    <strong>Cliente asignado:</strong> {usuario.clientes[0].nombre}
                                 </>
                             )}
                         </AlertDialogDescription>

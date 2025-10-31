@@ -184,13 +184,25 @@ export async function getClienteIdFromUser(): Promise<string | null> {
     return null;
   }
 
+  // Primero verificar si el usuario es de tipo cliente
+  const { data: userProfile } = await supabase
+    .from("usuarios_auth")
+    .select("user_type")
+    .eq("id", user.id)
+    .single();
+
+  // Si no es cliente, no hacer el fetch
+  if (!userProfile || userProfile.user_type !== "cliente") {
+    return null;
+  }
+
   // Buscar la relación usuario-cliente
   const { data: usuarioCliente, error } = await supabase
     .from("usuarios_clientes")
     .select("cliente_id, clientes(id, nombre)")
     .eq("user_id", user.id)
     .eq("is_active", true)
-    .single();
+    .maybeSingle(); // Usar maybeSingle en lugar de single
 
   if (error) {
     console.error("Error fetching cliente for user:", error);
@@ -217,6 +229,18 @@ export async function getClienteInfoFromUser(): Promise<{
     return null;
   }
 
+  // Primero verificar si el usuario es de tipo cliente
+  const { data: userProfile } = await supabase
+    .from("usuarios_auth")
+    .select("user_type")
+    .eq("id", user.id)
+    .single();
+
+  // Si no es cliente, no hacer el fetch
+  if (!userProfile || userProfile.user_type !== "cliente") {
+    return null;
+  }
+
   // Buscar la relación usuario-cliente con información completa
   const { data: usuarioCliente, error } = await supabase
     .from("usuarios_clientes")
@@ -231,7 +255,7 @@ export async function getClienteInfoFromUser(): Promise<{
     )
     .eq("user_id", user.id)
     .eq("is_active", true)
-    .single();
+    .maybeSingle(); // Usar maybeSingle en lugar de single
 
   if (error) {
     console.error("Error fetching cliente info for user:", error);

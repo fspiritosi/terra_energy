@@ -20,14 +20,14 @@ export interface CreateUsuarioData {
   nombre?: string;
   email?: string;
   avatar_url?: string;
-  clienteIds: string[];
+  clienteId: string;
   id?: string;
   is_active: boolean;
 }
 
 export interface UpdateUsuarioData {
   id: string;
-  clienteIds: string[];
+  clienteId: string;
   is_active: boolean;
 }
 
@@ -57,18 +57,18 @@ export async function createUsuario(data: CreateUsuarioData) {
       throw new Error("No se pudo invitar al usuario");
     }
 
-    // 2. Crear relaciones con clientes
+    // 2. Crear relación con cliente
     const supabase = await createServerClient();
 
-    const relaciones = data.clienteIds.map((clienteId) => ({
+    const relacion = {
       user_id: authUser.user.id, // Usar el mismo ID del usuario invitado
-      cliente_id: clienteId,
+      cliente_id: data.clienteId,
       is_active: data.is_active,
-    }));
+    };
 
     const { error: relationError } = await supabase
       .from("usuarios_clientes")
-      .insert(relaciones);
+      .insert([relacion]);
 
     if (relationError) {
       // Si falla la creación de relaciones, eliminar el usuario invitado
@@ -128,16 +128,16 @@ export async function updateUsuario(data: UpdateUsuarioData) {
       throw new Error(`Error al actualizar relaciones: ${deleteError.message}`);
     }
 
-    // Crear nuevas relaciones
-    const relaciones = data.clienteIds.map((clienteId) => ({
+    // Crear nueva relación
+    const relacion = {
       user_id: data.id,
-      cliente_id: clienteId,
+      cliente_id: data.clienteId,
       is_active: data.is_active,
-    }));
+    };
 
     const { error: insertError } = await supabase
       .from("usuarios_clientes")
-      .insert(relaciones);
+      .insert([relacion]);
 
     if (insertError) {
       console.error("Error creating new relations:", insertError);

@@ -25,6 +25,7 @@ interface ItemsManagerProps {
 export function ItemsManager({ items, onItemsChange }: ItemsManagerProps) {
     const [inspectionTypes, setInspectionTypes] = useState<ItemInspectionType[]>([])
     const [loading, setLoading] = useState(true)
+    const [openAccordions, setOpenAccordions] = useState<string[]>([])
 
     // Cargar tipos de inspección
     useEffect(() => {
@@ -41,18 +42,42 @@ export function ItemsManager({ items, onItemsChange }: ItemsManagerProps) {
         loadInspectionTypes()
     }, [])
 
+    // Resetear acordeones abiertos cuando cambian los items externamente (ej: modo edición)
+    useEffect(() => {
+        // Solo resetear si no hay acordeones abiertos (evitar conflictos con addItem)
+        if (openAccordions.length === 0 && items.length > 0) {
+            // En modo edición, no abrir ningún acordeón por defecto
+            setOpenAccordions([])
+        }
+    }, [items.length, openAccordions.length])
+
     const addItem = () => {
         const newItem: SolicitudItem = {
             descripcion: "",
             cantidad: 1,
             inspections: []
         }
-        onItemsChange([...items, newItem])
+        const newItems = [...items, newItem]
+        onItemsChange(newItems)
+
+        // Abrir automáticamente el acordeón del nuevo item
+        const newItemIndex = newItems.length - 1
+        setOpenAccordions(prev => [...prev, newItemIndex.toString()])
     }
 
     const removeItem = (index: number) => {
         const newItems = items.filter((_, i) => i !== index)
         onItemsChange(newItems)
+
+        // Remover el acordeón de la lista de abiertos y reajustar índices
+        setOpenAccordions(prev =>
+            prev
+                .filter(value => value !== index.toString())
+                .map(value => {
+                    const numValue = parseInt(value)
+                    return numValue > index ? (numValue - 1).toString() : value
+                })
+        )
     }
 
     const updateItem = (index: number, field: keyof SolicitudItem, value: string | number | string[]) => {
@@ -98,9 +123,13 @@ export function ItemsManager({ items, onItemsChange }: ItemsManagerProps) {
             <div className="space-y-4">
                 {items.map((item, index) => (
                     <Card key={index}>
-                        <Accordion type="multiple">
+                        <Accordion
+                            type="multiple"
+                            value={openAccordions}
+                            onValueChange={setOpenAccordions}
+                        >
                             <AccordionItem value={`${index}`} className="border-none">
-                                <div className="flex items-center justify-between p-6 pb-3">
+                                <div className="flex items-center justify-between p-6">
                                     <AccordionTrigger className="flex-1 text-left hover:no-underline p-0">
                                         <CardTitle className="text-base">
                                             {item.descripcion ? item.descripcion : `Item ${index + 1}`}

@@ -123,6 +123,7 @@ export async function createSolicitud(data: CreateSolicitudData) {
     }
 
     revalidatePath("/dashboard/solicitudes");
+    revalidatePath("/dashboard");
     return { success: true, solicitudId: solicitud.id };
   } catch (error) {
     console.error("Error in createSolicitud:", error);
@@ -248,6 +249,7 @@ export async function updateSolicitud(data: UpdateSolicitudData) {
     }
 
     revalidatePath("/dashboard/solicitudes");
+    revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
     console.error("Error in updateSolicitud:", error);
@@ -277,6 +279,7 @@ export async function aprobarSolicitud(
     }
 
     revalidatePath("/dashboard/solicitudes");
+    revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
     console.error("Error in aprobarSolicitud:", error);
@@ -306,6 +309,7 @@ export async function rechazarSolicitud(
     }
 
     revalidatePath("/dashboard/solicitudes");
+    revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
     console.error("Error in rechazarSolicitud:", error);
@@ -329,6 +333,7 @@ export async function deleteSolicitud(solicitudId: string) {
     }
 
     revalidatePath("/dashboard/solicitudes");
+    revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
     console.error("Error in deleteSolicitud:", error);

@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
-import { Checkbox } from "@/components/ui/checkbox"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ImageUpload } from "@/components/profile/image-upload"
@@ -34,7 +34,7 @@ const usuarioSchema = z.object({
     nombre: z.string().optional(),
     email: z.string().optional(),
     avatar_url: z.string().optional(),
-    clienteIds: z.array(z.string()).min(1, "Debe seleccionar al menos un cliente"),
+    clienteId: z.string().min(1, "Debe seleccionar un cliente"),
     is_active: z.boolean(),
 })
 
@@ -66,7 +66,7 @@ export function UsuarioForm({
             nombre: "",
             email: "",
             avatar_url: "",
-            clienteIds: [],
+            clienteId: "",
             is_active: true,
         },
     })
@@ -75,12 +75,12 @@ export function UsuarioForm({
     React.useEffect(() => {
         if (open) {
             if (usuario) {
-                const clienteIds = usuario.clientes?.map(c => c.id) || []
+                const clienteId = usuario.clientes?.[0]?.id || ""
                 form.reset({
                     nombre: usuario.nombre || "",
                     email: usuario.email || "",
                     avatar_url: usuario.avatar_url || "",
-                    clienteIds,
+                    clienteId,
                     is_active: usuario.is_active,
                 })
                 setAvatarUrl(usuario.avatar_url || "")
@@ -89,7 +89,7 @@ export function UsuarioForm({
                     nombre: "",
                     email: "",
                     avatar_url: "",
-                    clienteIds: [],
+                    clienteId: "",
                     is_active: true,
                 })
                 setAvatarUrl("")
@@ -107,9 +107,9 @@ export function UsuarioForm({
     const handleSubmit = async (data: UsuarioFormData) => {
         try {
             if (isEditing) {
-                // En modo edición, solo enviar clienteIds y is_active
+                // En modo edición, solo enviar clienteId y is_active
                 await onSubmit({
-                    clienteIds: data.clienteIds,
+                    clienteId: data.clienteId,
                     is_active: data.is_active
                 })
             } else {
@@ -118,7 +118,7 @@ export function UsuarioForm({
                     nombre: data.nombre,
                     email: data.email,
                     avatar_url: avatarUrl,
-                    clienteIds: data.clienteIds,
+                    clienteId: data.clienteId,
                     is_active: data.is_active
                 })
             }
@@ -217,55 +217,39 @@ export function UsuarioForm({
                                 </div>
                             )}
 
-                            {/* Asignación de clientes */}
+                            {/* Asignación de cliente */}
                             <FormField
                                 control={form.control}
-                                name="clienteIds"
-                                render={() => (
+                                name="clienteId"
+                                render={({ field }) => (
                                     <FormItem>
                                         <div className="mb-4">
                                             <FormLabel className="text-base">
-                                                Asignar a Clientes *
+                                                Asignar a Cliente *
                                             </FormLabel>
                                             <p className="text-sm text-muted-foreground">
-                                                Selecciona los clientes a los que tendrá acceso este usuario
+                                                Selecciona el cliente al que tendrá acceso este usuario
                                             </p>
                                         </div>
-                                        <div className="grid grid-cols-1 gap-3 max-h-40 overflow-y-auto border rounded-md p-3">
-                                            {clientes.map((cliente) => (
-                                                <FormField
-                                                    key={cliente.id}
-                                                    control={form.control}
-                                                    name="clienteIds"
-                                                    render={({ field }) => {
-                                                        return (
-                                                            <FormItem
-                                                                key={cliente.id}
-                                                                className="flex flex-row items-start space-x-3 space-y-0"
-                                                            >
-                                                                <FormControl>
-                                                                    <Checkbox
-                                                                        checked={field.value?.includes(cliente.id)}
-                                                                        onCheckedChange={(checked) => {
-                                                                            return checked
-                                                                                ? field.onChange([...field.value, cliente.id])
-                                                                                : field.onChange(
-                                                                                    field.value?.filter(
-                                                                                        (value) => value !== cliente.id
-                                                                                    )
-                                                                                )
-                                                                        }}
-                                                                    />
-                                                                </FormControl>
-                                                                <FormLabel className="text-sm font-normal cursor-pointer">
-                                                                    {cliente.nombre}
-                                                                </FormLabel>
-                                                            </FormItem>
-                                                        )
-                                                    }}
-                                                />
-                                            ))}
-                                        </div>
+                                        <FormControl>
+                                            <RadioGroup
+                                                onValueChange={field.onChange}
+                                                value={field.value}
+                                                className="grid grid-cols-1 gap-3 max-h-40 overflow-y-auto border rounded-md p-3"
+                                            >
+                                                {clientes.map((cliente) => (
+                                                    <div key={cliente.id} className="flex items-center space-x-2">
+                                                        <RadioGroupItem value={cliente.id} id={cliente.id} />
+                                                        <FormLabel
+                                                            htmlFor={cliente.id}
+                                                            className="text-sm font-normal cursor-pointer flex-1"
+                                                        >
+                                                            {cliente.nombre}
+                                                        </FormLabel>
+                                                    </div>
+                                                ))}
+                                            </RadioGroup>
+                                        </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
