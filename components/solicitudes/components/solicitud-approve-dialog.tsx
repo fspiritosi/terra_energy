@@ -21,11 +21,13 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { CheckCircle } from "lucide-react"
 import { Solicitud } from "./actions"
 
 const approveSchema = z.object({
+    fechaProgramada: z.string().min(1, "La fecha programada es requerida"),
     comentarios: z.string().optional(),
 })
 
@@ -35,7 +37,7 @@ interface SolicitudApproveDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     solicitud: Solicitud | null
-    onApprove: (solicitudId: string, comentarios?: string) => Promise<void>
+    onApprove: (solicitudId: string, fechaProgramada: string, comentarios?: string) => Promise<void>
     isLoading?: boolean
 }
 
@@ -49,13 +51,17 @@ export function SolicitudApproveDialog({
     const form = useForm<ApproveFormData>({
         resolver: zodResolver(approveSchema),
         defaultValues: {
+            fechaProgramada: "",
             comentarios: "",
         },
     })
 
     React.useEffect(() => {
         if (open) {
-            form.reset({ comentarios: "" })
+            form.reset({
+                fechaProgramada: "",
+                comentarios: ""
+            })
         }
     }, [open, form])
 
@@ -63,7 +69,7 @@ export function SolicitudApproveDialog({
         if (!solicitud) return
 
         try {
-            await onApprove(solicitud.id, data.comentarios)
+            await onApprove(solicitud.id, data.fechaProgramada, data.comentarios)
             onOpenChange(false)
         } catch (error) {
             console.error("Error al aprobar solicitud:", error)
@@ -97,6 +103,24 @@ export function SolicitudApproveDialog({
                                 <p><span className="font-medium">Responsable:</span> {solicitud.responsable}</p>
                             </div>
                         </div>
+
+                        <FormField
+                            control={form.control}
+                            name="fechaProgramada"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Fecha Programada para la Inspección *</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="date"
+                                            min={new Date().toISOString().split('T')[0]}
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         <FormField
                             control={form.control}

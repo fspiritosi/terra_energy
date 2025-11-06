@@ -1,10 +1,5 @@
-import React from 'react'
-import Link from 'next/link'
+import Inspecciones from "@/components/inspecciones/Inspecciones";
 
-function page() {
-  return (
-    <Link href="/dashboard/inspecciones/tipos_de_inspeccion">Tipos de Inspecciones</Link>
-  )
+export default function InspeccionesPage() {
+  return <Inspecciones />
 }
-
-export default page

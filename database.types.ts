@@ -56,6 +56,102 @@ export type Database = {
         }
         Relationships: []
       }
+      equipos_inspeccion: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      inspecciones: {
+        Row: {
+          cliente_id: string
+          cliente_nombre: string
+          created_at: string | null
+          equipo: string
+          estado: Database["public"]["Enums"]["estado_inspeccion"] | null
+          fecha_completada: string | null
+          fecha_programada: string
+          id: string
+          inspector_asignado_id: string | null
+          lugar: string
+          numero_inspeccion: string
+          observaciones: string | null
+          responsable: string
+          solicitud_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          cliente_id: string
+          cliente_nombre: string
+          created_at?: string | null
+          equipo: string
+          estado?: Database["public"]["Enums"]["estado_inspeccion"] | null
+          fecha_completada?: string | null
+          fecha_programada: string
+          id?: string
+          inspector_asignado_id?: string | null
+          lugar: string
+          numero_inspeccion: string
+          observaciones?: string | null
+          responsable: string
+          solicitud_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          cliente_id?: string
+          cliente_nombre?: string
+          created_at?: string | null
+          equipo?: string
+          estado?: Database["public"]["Enums"]["estado_inspeccion"] | null
+          fecha_completada?: string | null
+          fecha_programada?: string
+          id?: string
+          inspector_asignado_id?: string | null
+          lugar?: string
+          numero_inspeccion?: string
+          observaciones?: string | null
+          responsable?: string
+          solicitud_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inspecciones_inspector_asignado_id_fkey"
+            columns: ["inspector_asignado_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios_auth"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inspecciones_solicitud_id_fkey"
+            columns: ["solicitud_id"]
+            isOneToOne: false
+            referencedRelation: "solicitudes_inspeccion"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       item_inspection_types: {
         Row: {
           codigo: string
@@ -420,12 +516,18 @@ export type Database = {
         Args: { client_name: string }
         Returns: string
       }
+      generate_numero_inspeccion: { Args: never; Returns: string }
       generate_numero_solicitud:
         | { Args: never; Returns: string }
         | { Args: { cliente_id_param: string }; Returns: string }
       log_debug_solicitud: { Args: { mensaje: string }; Returns: boolean }
     }
     Enums: {
+      estado_inspeccion:
+        | "programada"
+        | "en_progreso"
+        | "completada"
+        | "cancelada"
       moneda: "ARS" | "USD"
     }
     CompositeTypes: {
@@ -554,6 +656,12 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      estado_inspeccion: [
+        "programada",
+        "en_progreso",
+        "completada",
+        "cancelada",
+      ],
       moneda: ["ARS", "USD"],
     },
   },

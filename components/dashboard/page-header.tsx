@@ -49,7 +49,7 @@ export function PageHeader() {
             <SidebarTrigger className="-ml-1 text-primary-foreground hover:bg-primary-foreground/10" />
             <Separator orientation="vertical" className="mr-2 h-4 bg-primary-foreground/20" />
             <div className="flex items-center gap-3 flex-1">
-                <h1 className="text-lg font-semibold text-primary-foreground">{pageTitle}</h1>
+                <h1 className="text-lg font-semibold text-primary-foreground">{pageTitle.replaceAll('_', ' ')}</h1>
                 {isCliente && (
                     <>
                         <span >

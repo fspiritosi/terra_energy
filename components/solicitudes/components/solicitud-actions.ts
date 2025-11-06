@@ -329,12 +329,30 @@ export async function updateSolicitud(data: UpdateSolicitudData) {
 
 export async function aprobarSolicitud(
   solicitudId: string,
+  fechaProgramada: string,
   comentarios?: string
 ) {
   try {
     const supabase = await createClient();
 
-    const { error } = await supabase
+    // Primero obtener los datos de la solicitud
+    const { data: solicitud, error: solicitudError } = await supabase
+      .from("solicitudes_inspeccion")
+      .select(
+        `
+        *,
+        clientes!inner(nombre)
+      `
+      )
+      .eq("id", solicitudId)
+      .single();
+
+    if (solicitudError || !solicitud) {
+      throw new Error(`Error al obtener solicitud: ${solicitudError?.message}`);
+    }
+
+    // Actualizar el estado de la solicitud
+    const { error: updateError } = await supabase
       .from("solicitudes_inspeccion")
       .update({
         estado: "aprobada",
@@ -343,12 +361,33 @@ export async function aprobarSolicitud(
       })
       .eq("id", solicitudId);
 
-    if (error) {
-      console.error("Error approving solicitud:", error);
-      throw new Error(`Error al aprobar solicitud: ${error.message}`);
+    if (updateError) {
+      console.error("Error approving solicitud:", updateError);
+      throw new Error(`Error al aprobar solicitud: ${updateError.message}`);
+    }
+
+    // Crear la inspección automáticamente
+    const { error: inspeccionError } = await supabase
+      .from("inspecciones")
+      .insert({
+        solicitud_id: solicitudId,
+        numero_inspeccion: "", // Se generará automáticamente por el trigger
+        fecha_programada: fechaProgramada,
+        cliente_id: solicitud.cliente_id,
+        cliente_nombre: solicitud.clientes.nombre,
+        lugar: solicitud.lugar,
+        responsable: solicitud.responsable,
+        equipo: solicitud.equipo,
+        estado: "programada",
+      });
+
+    if (inspeccionError) {
+      console.error("Error creating inspeccion:", inspeccionError);
+      throw new Error(`Error al crear inspección: ${inspeccionError.message}`);
     }
 
     revalidatePath("/dashboard/solicitudes");
+    revalidatePath("/dashboard/inspecciones");
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {

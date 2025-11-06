@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { SolicitudForm } from "./solicitud-form"
 import { createSolicitud, CreateSolicitudData } from "./solicitud-actions"
 import { getClientesActivos, getTiposInspeccion } from "./actions"
+import { getEquiposActivos } from "@/components/equipos/components/actions"
 import { toast } from "sonner"
 
 export function AddSolicitudButton() {
@@ -13,18 +14,21 @@ export function AddSolicitudButton() {
     const [isLoading, setIsLoading] = React.useState(false)
     const [clientes, setClientes] = React.useState<Awaited<ReturnType<typeof getClientesActivos>>>([])
     const [trabajos, setTrabajos] = React.useState<Awaited<ReturnType<typeof getTiposInspeccion>>>([])
+    const [equipos, setEquipos] = React.useState<Awaited<ReturnType<typeof getEquiposActivos>>>([])
 
     // Cargar datos necesarios cuando se abre el modal
     React.useEffect(() => {
         if (open) {
             const loadData = async () => {
                 try {
-                    const [clientesData, trabajosData] = await Promise.all([
+                    const [clientesData, trabajosData, equiposData] = await Promise.all([
                         getClientesActivos(),
-                        getTiposInspeccion()
+                        getTiposInspeccion(),
+                        getEquiposActivos()
                     ])
                     setClientes(clientesData)
                     setTrabajos(trabajosData)
+                    setEquipos(equiposData)
                 } catch (error) {
                     console.error("Error loading data:", error)
                     toast.error("Error al cargar los datos")
@@ -60,6 +64,7 @@ export function AddSolicitudButton() {
                 onOpenChange={setOpen}
                 clientes={clientes}
                 trabajos={trabajos}
+                equipos={equipos}
                 onSubmit={handleSubmit}
                 isLoading={isLoading}
             />

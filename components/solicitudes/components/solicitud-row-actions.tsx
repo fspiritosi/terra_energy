@@ -11,6 +11,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Solicitud, getClientesActivos, getTiposInspeccion } from "./actions"
+import { getEquiposActivos } from "@/components/equipos/components/actions"
 import { aprobarSolicitud, rechazarSolicitud } from "./solicitud-actions"
 import { SolicitudForm } from "./solicitud-form"
 import { SolicitudDetailsDialog } from "./solicitud-details-dialog"
@@ -32,6 +33,7 @@ export function SolicitudRowActions({ solicitud }: SolicitudRowActionsProps) {
     const [isLoading, setIsLoading] = React.useState(false)
     const [clientes, setClientes] = React.useState<Awaited<ReturnType<typeof getClientesActivos>>>([])
     const [tiposInspeccion, setTiposInspeccion] = React.useState<Awaited<ReturnType<typeof getTiposInspeccion>>>([])
+    const [equipos, setEquipos] = React.useState<Awaited<ReturnType<typeof getEquiposActivos>>>([])
 
     const { userProfile } = useUserType()
     const isPendiente = solicitud.estado === "pendiente"
@@ -43,10 +45,12 @@ export function SolicitudRowActions({ solicitud }: SolicitudRowActionsProps) {
         if (editOpen) {
             Promise.all([
                 getClientesActivos(),
-                getTiposInspeccion()
-            ]).then(([clientesData, tiposData]) => {
+                getTiposInspeccion(),
+                getEquiposActivos()
+            ]).then(([clientesData, tiposData, equiposData]) => {
                 setClientes(clientesData)
                 setTiposInspeccion(tiposData)
+                setEquipos(equiposData)
             })
         }
     }, [editOpen])
@@ -75,10 +79,10 @@ export function SolicitudRowActions({ solicitud }: SolicitudRowActionsProps) {
         }
     }
 
-    const handleApprove = async (solicitudId: string, comentarios?: string) => {
+    const handleApprove = async (solicitudId: string, fechaProgramada: string, comentarios?: string) => {
         setIsLoading(true)
         try {
-            await aprobarSolicitud(solicitudId, comentarios)
+            await aprobarSolicitud(solicitudId, fechaProgramada, comentarios)
             toast.success("Solicitud aprobada exitosamente")
             window.location.reload()
         } catch (error) {
@@ -166,6 +170,7 @@ export function SolicitudRowActions({ solicitud }: SolicitudRowActionsProps) {
                 solicitud={solicitud}
                 clientes={clientes}
                 trabajos={tiposInspeccion}
+                equipos={equipos}
                 onSubmit={handleEdit}
                 isLoading={isLoading}
             />

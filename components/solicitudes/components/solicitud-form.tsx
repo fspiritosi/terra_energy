@@ -31,6 +31,7 @@ import { useUserType } from "@/hooks/use-user-type"
 import { useUserCliente } from "@/hooks/use-user-cliente"
 import { Solicitud, TipoInspeccion, ClienteOption } from "./actions"
 import { SolicitudItem } from "./solicitud-actions"
+import { Equipo } from "@/components/equipos/components/actions"
 
 const solicitudSchema = z.object({
     cliente_id: z.string().min(1, "Debe seleccionar un cliente"),
@@ -56,6 +57,7 @@ interface SolicitudFormProps {
     solicitud?: Solicitud | null
     clientes: ClienteOption[]
     trabajos: TipoInspeccion[]
+    equipos: Equipo[]
     onSubmit: (data: SolicitudFormData) => Promise<void>
     isLoading?: boolean
 }
@@ -66,6 +68,7 @@ export function SolicitudForm({
     solicitud,
     clientes,
     trabajos,
+    equipos,
     onSubmit,
     isLoading = false,
 }: SolicitudFormProps) {
@@ -297,7 +300,17 @@ export function SolicitudForm({
                                         <FormItem>
                                             <FormLabel>Equipo *</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Equipo a inspeccionar" {...field} />
+                                                <select
+                                                    {...field}
+                                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                                >
+                                                    <option value="">Seleccionar equipo...</option>
+                                                    {equipos.filter(equipo => equipo.is_active).map(equipo => (
+                                                        <option key={equipo.id} value={equipo.name}>
+                                                            {equipo.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

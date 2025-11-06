@@ -69,10 +69,10 @@ export function SolicitudDetailsDialog({
         orden: img.orden || 1, // Usar 1 como valor por defecto si es null
     }))
 
-    const handleApprove = async (solicitudId: string, comentarios?: string) => {
+    const handleApprove = async (solicitudId: string, fechaProgramada: string, comentarios?: string) => {
         setIsLoading(true)
         try {
-            await aprobarSolicitud(solicitudId, comentarios)
+            await aprobarSolicitud(solicitudId, fechaProgramada, comentarios)
             toast.success("Solicitud aprobada exitosamente")
             setShowApproveDialog(false)
             // Opcional: cerrar el modal de detalles también

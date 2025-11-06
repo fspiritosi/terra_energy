@@ -8,13 +8,17 @@ import {
   FolderOpen,
   BarChart3,
   UserPlus,
+  Wrench,
+  List,
+  Tags,
 } from "lucide-react";
 
 export interface NavItem {
   title: string;
-  url: string;
+  url?: string;
   icon: React.ComponentType;
   disabled?: boolean;
+  items?: NavItem[];
 }
 
 export const clienteNavItems: NavItem[] = [
@@ -57,13 +61,28 @@ export const operacionNavItems: NavItem[] = [
     title: "Calendario",
     url: "/dashboard/calendario",
     icon: Calendar,
-    disabled: true,
+    disabled: false,
   },
   {
     title: "Inspecciones",
-    url: "/dashboard/inspecciones",
     icon: ClipboardCheck,
-    disabled: false,
+    items: [
+      {
+        title: "Equipos de Inspecciones",
+        url: "/dashboard/equipos",
+        icon: Wrench,
+      },
+      {
+        title: "Listado de Inspecciones",
+        url: "/dashboard/inspecciones",
+        icon: List,
+      },
+      {
+        title: "Tipos de Inspecciones",
+        url: "/dashboard/inspecciones/tipos_de_inspeccion",
+        icon: Tags,
+      },
+    ],
   },
   {
     title: "Clientes",

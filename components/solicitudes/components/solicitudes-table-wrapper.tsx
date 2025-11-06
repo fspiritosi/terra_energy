@@ -116,7 +116,7 @@ export function SolicitudesTableWrapper({ data, userType }: SolicitudesTableWrap
                                 {description}
                             </CardDescription>
                         </div>
-                        {userType === "cliente" && <AddSolicitudButton />}
+                        <AddSolicitudButton />
                     </div>
                 </CardHeader>
                 <CardContent>
