@@ -47,7 +47,7 @@ export async function SolicitudesSinAsignar() {
                                     </p>
                                 </div>
                                 <Button size="sm" asChild>
-                                    <Link href={`/dashboard/solicitudes`}>
+                                    <Link href={`/dashboard/solicitudes?review=${solicitud.numero_solicitud}`}>
                                         Revisar
                                     </Link>
                                 </Button>

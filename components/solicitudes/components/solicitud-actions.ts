@@ -2,11 +2,25 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import {
+  uploadSolicitudImage,
+  deleteSolicitudImage,
+  ensureSolicitudesImagesBucket,
+} from "@/lib/supabase/solicitudes-storage";
 
 export interface SolicitudItem {
   descripcion: string;
   cantidad: number;
   inspections?: string[]; // Array de IDs de tipos de inspección
+}
+
+export interface SolicitudImageData {
+  file?: File; // Para imágenes nuevas
+  url?: string; // Para imágenes existentes
+  fileName: string;
+  orden: number;
+  id?: string; // Para imágenes existentes
+  toDelete?: boolean; // Para marcar imágenes a eliminar
 }
 
 export interface CreateSolicitudData {
@@ -18,10 +32,56 @@ export interface CreateSolicitudData {
   requisitos_adicionales?: string;
   items: SolicitudItem[];
   trabajos_ids: string[];
+  images?: SolicitudImageData[];
 }
 
 export interface UpdateSolicitudData extends CreateSolicitudData {
   id: string;
+}
+
+// Función auxiliar para manejar imágenes
+async function handleSolicitudImages(
+  solicitudId: string,
+  images?: SolicitudImageData[]
+) {
+  if (!images || images.length === 0) return;
+
+  const supabase = await createClient();
+
+  // Asegurar que el bucket existe
+  await ensureSolicitudesImagesBucket();
+
+  // Procesar imágenes a eliminar
+  const imagesToDelete = images.filter((img) => img.toDelete && img.id);
+  for (const image of imagesToDelete) {
+    if (image.url) {
+      await deleteSolicitudImage(image.url);
+    }
+    if (image.id) {
+      await supabase.from("solicitud_imagenes").delete().eq("id", image.id);
+    }
+  }
+
+  // Procesar imágenes nuevas
+  const newImages = images.filter((img) => img.file && !img.toDelete);
+  for (const imageData of newImages) {
+    if (imageData.file) {
+      const uploadResult = await uploadSolicitudImage(
+        solicitudId,
+        imageData.file,
+        imageData.orden
+      );
+
+      if (uploadResult) {
+        await supabase.from("solicitud_imagenes").insert({
+          solicitud_id: solicitudId,
+          imagen_url: uploadResult.url,
+          nombre_archivo: uploadResult.fileName,
+          orden: imageData.orden,
+        });
+      }
+    }
+  }
 }
 
 export async function createSolicitud(data: CreateSolicitudData) {
@@ -120,6 +180,11 @@ export async function createSolicitud(data: CreateSolicitudData) {
         console.error("Error creating trabajos:", trabajosError);
         throw new Error(`Error al crear trabajos: ${trabajosError.message}`);
       }
+    }
+
+    // 4. Manejar imágenes si las hay
+    if (data.images && data.images.length > 0) {
+      await handleSolicitudImages(solicitud.id, data.images);
     }
 
     revalidatePath("/dashboard/solicitudes");
@@ -246,6 +311,11 @@ export async function updateSolicitud(data: UpdateSolicitudData) {
           `Error al crear nuevos trabajos: ${trabajosError.message}`
         );
       }
+    }
+
+    // 4. Manejar imágenes si las hay
+    if (data.images && data.images.length > 0) {
+      await handleSolicitudImages(data.id, data.images);
     }
 
     revalidatePath("/dashboard/solicitudes");

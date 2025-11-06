@@ -17,6 +17,7 @@ import { CheckCircle, XCircle } from "lucide-react"
 import { Solicitud } from "./actions"
 import { SolicitudApproveDialog } from "./solicitud-approve-dialog"
 import { SolicitudRejectDialog } from "./solicitud-reject-dialog"
+import { SolicitudImagesViewer, SolicitudImageView } from "./solicitud-images-viewer"
 import { aprobarSolicitud, rechazarSolicitud } from "./solicitud-actions"
 import { useUserType } from "@/hooks/use-user-type"
 import { toast } from "sonner"
@@ -59,6 +60,14 @@ export function SolicitudDetailsDialog({
 
     // Solo usuarios que NO son clientes pueden aprobar/rechazar
     const canApproveReject = userProfile?.user_type !== "cliente"
+
+    // Convertir imágenes al formato del visor
+    const imagenesParaVisor: SolicitudImageView[] = (solicitud.imagenes || []).map(img => ({
+        id: img.id,
+        url: img.imagen_url,
+        fileName: img.nombre_archivo,
+        orden: img.orden || 1, // Usar 1 como valor por defecto si es null
+    }))
 
     const handleApprove = async (solicitudId: string, comentarios?: string) => {
         setIsLoading(true)
@@ -267,6 +276,11 @@ export function SolicitudDetailsDialog({
                                 </div>
                             </CardContent>
                         </Card>
+
+                        {/* Imágenes */}
+                        {imagenesParaVisor.length > 0 && (
+                            <SolicitudImagesViewer images={imagenesParaVisor} />
+                        )}
 
                         {/* Estado y Aprobación */}
                         {(solicitud.estado === "aprobada" || solicitud.estado === "rechazada") && (

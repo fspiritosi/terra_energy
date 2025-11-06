@@ -1,86 +1,56 @@
-# 📋 Tareas Pendientes - Sistema de Inspecciones
+# TAREAS ORGANIZADAS
 
-## 1. ✅ **Restricción Usuario-Cliente (UN SOLO CLIENTE)**
+## 1. Formulario de Solicitudes - Visibilidad y Selector para Admins
 
-**Estado**: ✅ COMPLETADO
-**Descripción**: Modificado el formulario de creación/edición de usuarios para que solo permita seleccionar UN cliente en lugar de múltiples clientes.
-**Cambios realizados**:
+**Problema actual**:
 
-- ✅ Cambiado de checkboxes (multi-select) a radio buttons (single-select)
-- ✅ Actualizado schema de validación: `clienteIds[]` → `clienteId`
-- ✅ Modificadas interfaces `CreateUsuarioData` y `UpdateUsuarioData`
-- ✅ Actualizada lógica en `createUsuario()` y `updateUsuario()`
-- ✅ Instalado componente `radio-group` de shadcn
-- ✅ Actualizado texto de UI: "Asignar a Clientes" → "Asignar a Cliente"
+- Solo los clientes ven el botón "Nueva Solicitud"
+- Solo los clientes pueden crear solicitudes (el cliente se infiere automáticamente)
 
----
+**Solución**:
 
-## 2. ✅ **Botones Aprobar/Rechazar en Modal de Detalles**
+- Hacer visible el botón para usuarios de operación/admins
+- Agregar selector de cliente en el formulario cuando el usuario no es cliente
 
-**Estado**: ✅ COMPLETADO
-**Descripción**: Agregados botones de "Aprobar" y "Rechazar" en el modal de detalles de solicitud.
-**Cambios realizados**:
+**Implementación**:
 
-- ✅ Agregados botones "Aprobar" y "Rechazar" en el footer del modal de detalles
-- ✅ Integrados con server actions existentes: `aprobarSolicitud()` y `rechazarSolicitud()`
-- ✅ Los botones solo aparecen cuando la solicitud está en estado "pendiente"
-- ✅ **Restricción por tipo de usuario**: Solo usuarios NO-cliente pueden ver los botones
-- ✅ Integrados con los diálogos de confirmación existentes
-- ✅ Agregadas notificaciones toast para feedback del usuario
-- ✅ Manejo de estados de loading durante las operaciones
+- Modificar `solicitudes-table-wrapper.tsx` para mostrar botón a operación
+- Agregar campo select de cliente en `solicitud-form.tsx` para usuarios operación
 
----
+## 2. CRUD de Equipos de Inspección
 
-## 3. ✅ **Dashboard Funcional con Componentes Asincrónicos**
+**Crear nueva página**: "Equipos de Inspecciones"
+**Funcionalidad**: CRUD completo (tabla, modal, editar, eliminar)
+**Campos**: `name`, `is_active`, `description` (opcional)
+**Integración**: Reemplazar el campo de texto "equipo" en el formulario de solicitudes por un select
+**Pendiente**: Crear las tablas en Supabase
 
-**Estado**: ✅ COMPLETADO
-**Descripción**: Dashboard funcional con componentes asincrónicos individuales, cada uno con su propio fallback de loading.
-**Componentes implementados**:
+## 3. Sistema de Inspecciones con Fechas
 
-- ✅ **StatsCards**: Widget de estadísticas de solicitudes por estado (total, pendientes, aprobadas, rechazadas)
-- ✅ **SolicitudesRecientes**: Widget de últimas 5 solicitudes con datos reales
-- ✅ **CrearSolicitudWidget**: Widget para crear nueva solicitud
-- ✅ **DashboardCliente**: Dashboard principal que integra todos los widgets
-  **Características implementadas**:
-- ✅ Cada componente es asíncrono (server component)
-- ✅ Cada uno con su propio Suspense y fallback
-- ✅ Datos reales desde la base de datos
-- ✅ Revalidación automática con revalidatePath
+**Al aprobar solicitud**: Pedir fecha de entrega/resolución
+**Nueva página**: "Listado de Inspecciones"
+**Funcionalidad**: CRUD automático + botón "Reprogramar"
+**Flujo**: Solicitud aprobada → se convierte en Inspección programada
 
----
+## 4. Estructura del Sidebar - Item "Inspecciones" con Subitems
 
-## 4. ✅ **Dashboard Cliente - Crear Solicitud + Tabla Recientes**
+**Modificar**: `nav-config.ts` para crear estructura jerárquica
+**Item principal**: "Inspecciones"
+**Subitems**:
 
-**Estado**: ✅ COMPLETADO
-**Descripción**: Dashboard del cliente con funcionalidad completa para crear solicitudes y mostrar recientes.
-**Funcionalidades implementadas**:
+- Equipos de inspecciones
+- Listado de inspecciones
+- Tipos de inspecciones
 
-- ✅ **Botón "Crear Solicitud"**: Abre el modal existente de crear solicitudes
-- ✅ **Tabla "Solicitudes Recientes"**: Muestra las últimas 5 solicitudes del cliente
-- ✅ **Revalidación**: Cuando se crea una solicitud, `revalidatePath()` actualiza automáticamente la tabla de recientes
-- ✅ **Estadísticas en tiempo real**: Cards con métricas actualizadas
-- ✅ **Componentes asincrónicos**: Cada widget carga independientemente con Suspense
+## 5. Calendario Completo
 
----
+**Investigar**: Ejemplos de calendario en shadcn/ui
+**Funcionalidad**: Mostrar calendario mensual con eventos agrupados por día
+**Referencias**:
 
-## 🎯 **Todas las tareas completadas** ✅
+- https://ui.shadcn.com/view/new-york-v4/sidebar-12
+- https://ui.shadcn.com/blocks/sidebar
 
-No hay tareas pendientes en este momento.
+## PENDIENTES
 
----
-
-## ✅ **Completadas**:
-
-- ✅ Políticas RLS para que usuarios cliente vean solo sus clientes asignados
-- ✅ Header muestra nombre del cliente para usuarios tipo "cliente"
-- ✅ Server components para solicitudes (eliminados useEffect y estados)
-- ✅ Server actions para aprobar/rechazar solicitudes
-- ✅ **AddSolicitudButton revalidation**: Actualizado para revalidar tanto `/dashboard/solicitudes` como `/dashboard` en todas las acciones (crear, actualizar, aprobar, rechazar, eliminar)
-- ✅ **Dashboard Cliente completo**: Implementado con widgets funcionales (StatsCards, SolicitudesRecientes, CrearSolicitudWidget)
-- ✅ **Dashboard Operación completo**: Implementado con widgets funcionales (StatsCardsOperacion, SolicitudesSinAsignar, ActividadRecienteOperacion, AccionesRapidasOperacion)
-- ✅ **Componentes asincrónicos**: Todos los widgets del dashboard son server components con Suspense y datos reales
-- ✅ **Revalidación automática**: Los dashboards se actualizan automáticamente cuando se crean/modifican solicitudes
-- ✅ **Fix error fetch cliente**: Corregido error al intentar obtener info de cliente para usuarios no-cliente
-- ✅ **Nomenclatura de solicitudes mejorada**: Cambiado de SOL-2025-001 a SOL-[INICIALES_CLIENTE]-001 (ej: SOL-EDSE-001 para "Empresa Demo S.A.")
-- ✅ **Restricción usuario-cliente**: Cambiado formulario de usuarios para permitir solo UN cliente por usuario (radio buttons en lugar de checkboxes)
-- ✅ **Botones aprobar/rechazar en modal**: Agregados en el modal de detalles de solicitud con integración completa
+- manejar el dar de baja a los clientes (por ahora bloquear las solicitudes)

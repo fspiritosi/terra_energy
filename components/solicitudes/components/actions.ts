@@ -48,6 +48,12 @@ type SolicitudCompleta = {
       codigo: string;
     } | null;
   }>;
+  imagenes: Array<{
+    id: string;
+    imagen_url: string;
+    nombre_archivo: string;
+    orden: number | null;
+  }>;
   aprobador: {
     id: string | null;
     nombre: string | null;
@@ -90,6 +96,12 @@ export async function getSolicitudes(): Promise<SolicitudCompleta[]> {
           nombre,
           codigo
         )
+      ),
+      imagenes:solicitud_imagenes (
+        id,
+        imagen_url,
+        nombre_archivo,
+        orden
       ),
       aprobador:usuarios_auth!solicitudes_inspeccion_aprobada_por_fkey (
         id,

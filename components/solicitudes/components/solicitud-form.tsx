@@ -26,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ItemsManager } from "./items-manager"
 import { TrabajosMultiselect } from "./trabajos-multiselect"
+import { SolicitudImagesUpload, SolicitudImage } from "./solicitud-images-upload"
 import { useUserType } from "@/hooks/use-user-type"
 import { useUserCliente } from "@/hooks/use-user-cliente"
 import { Solicitud, TipoInspeccion, ClienteOption } from "./actions"
@@ -43,7 +44,8 @@ const solicitudSchema = z.object({
         cantidad: z.number().min(1, "La cantidad debe ser mayor a 0"),
         inspections: z.array(z.string()).min(1, "Debe seleccionar al menos un tipo de inspección")
     })).min(1, "Debe agregar al menos un item"),
-    trabajos_ids: z.array(z.string()).min(1, "Debe seleccionar al menos un trabajo")
+    trabajos_ids: z.array(z.string()).min(1, "Debe seleccionar al menos un trabajo"),
+    images: z.array(z.any()).optional() // Las imágenes son opcionales
 })
 
 type SolicitudFormData = z.infer<typeof solicitudSchema>
@@ -71,6 +73,7 @@ export function SolicitudForm({
     const { userProfile } = useUserType()
     const { clienteId: clienteIdFromUser, isLoading: isLoadingClienteId } = useUserCliente()
     const [items, setItems] = React.useState<SolicitudItem[]>([])
+    const [images, setImages] = React.useState<SolicitudImage[]>([])
 
     // Obtener cliente_id del usuario logueado si es cliente
     const finalClienteId = React.useMemo(() => {
@@ -91,6 +94,7 @@ export function SolicitudForm({
             requisitos_adicionales: "",
             items: [],
             trabajos_ids: [],
+            images: [],
         },
     })
 
@@ -108,6 +112,32 @@ export function SolicitudForm({
                     inspections: item.inspections?.map(insp => insp.inspection_type?.id).filter((id): id is string => Boolean(id)) || []
                 }))
 
+                // Convertir imágenes existentes al formato del componente
+                const existingImages: SolicitudImage[] = (solicitud.imagenes || []).map(img => {
+                    // Verificar si la URL es válida, si no, intentar reconstruirla
+                    const imageUrl = img.imagen_url;
+
+                    // Si la URL no contiene el dominio de Supabase, podría ser solo el path
+                    if (!imageUrl.includes('supabase') && !imageUrl.startsWith('http')) {
+                        // Reconstruir la URL usando el cliente de Supabase
+                        console.warn("⚠️ URL de imagen incompleta, reconstruyendo:", imageUrl);
+                        // Por ahora usar la URL tal como está, pero esto podría necesitar corrección
+                    }
+
+                    return {
+                        id: img.id,
+                        url: imageUrl,
+                        fileName: img.nombre_archivo,
+                        orden: img.orden || 1,
+                        isNew: false,
+                    };
+                })
+
+                // Ordenar las imágenes por orden
+                existingImages.sort((a, b) => a.orden - b.orden);
+
+
+
                 form.reset({
                     cliente_id: solicitud.cliente_id,
                     lugar: solicitud.lugar,
@@ -117,8 +147,10 @@ export function SolicitudForm({
                     requisitos_adicionales: solicitud.requisitos_adicionales || "",
                     items: itemsWithInspections,
                     trabajos_ids: trabajosIds as string[],
+                    images: [],
                 })
                 setItems(itemsWithInspections)
+                setImages(existingImages)
             } else {
                 // Modo creación
                 form.reset({
@@ -130,8 +162,10 @@ export function SolicitudForm({
                     requisitos_adicionales: "",
                     items: [],
                     trabajos_ids: [],
+                    images: [],
                 })
                 setItems([])
+                setImages([])
             }
         }
     }, [open, solicitud, form, finalClienteId])
@@ -144,6 +178,19 @@ export function SolicitudForm({
         }))
         form.setValue("items", itemsWithInspections)
     }, [items, form])
+
+    // Sincronizar imágenes con el formulario
+    React.useEffect(() => {
+        const imageData = images.map(img => ({
+            file: img.file,
+            url: img.url,
+            fileName: img.fileName,
+            orden: img.orden,
+            id: img.id,
+            toDelete: img.toDelete,
+        }))
+        form.setValue("images", imageData)
+    }, [images, form])
 
     const handleSubmit = async (data: SolicitudFormData) => {
         try {
@@ -305,6 +352,22 @@ export function SolicitudForm({
                                         <ItemsManager
                                             items={items}
                                             onItemsChange={setItems}
+                                        />
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Imágenes */}
+                            <FormField
+                                control={form.control}
+                                name="images"
+                                render={() => (
+                                    <FormItem>
+                                        <SolicitudImagesUpload
+                                            images={images}
+                                            onImagesChange={setImages}
+                                            disabled={isLoading || (isEditing && solicitud?.estado !== "pendiente")}
                                         />
                                         <FormMessage />
                                     </FormItem>
