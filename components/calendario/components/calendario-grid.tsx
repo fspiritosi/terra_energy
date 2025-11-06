@@ -12,12 +12,7 @@ interface CalendarioGridProps {
 
 const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 
-const estadoColors = {
-    programada: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800",
-    en_progreso: "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-300 dark:border-yellow-800",
-    completada: "bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800",
-    cancelada: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800"
-} as const
+
 
 export function CalendarioGrid({ fecha, inspecciones }: CalendarioGridProps) {
     const año = fecha.getFullYear()
@@ -120,16 +115,13 @@ export function CalendarioGrid({ fecha, inspecciones }: CalendarioGridProps) {
                                 {inspeccionesDelDia.slice(0, 3).map((inspeccion, idx: number) => (
                                     <div
                                         key={idx}
-                                        className={cn(
-                                            "text-xs p-1 rounded border truncate",
-                                            estadoColors[(inspeccion.estado as keyof typeof estadoColors) || 'programada']
-                                        )}
+                                        className="bg-muted after:bg-primary/70 relative rounded-md p-1 pl-3 text-xs after:absolute after:inset-y-1 after:left-1 after:w-0.5 after:rounded-full"
                                         title={`${inspeccion.numero_inspeccion} - ${inspeccion.cliente_nombre} - ${inspeccion.equipo}`}
                                     >
                                         <div className="font-medium truncate">
                                             {inspeccion.numero_inspeccion}
                                         </div>
-                                        <div className="truncate">
+                                        <div className="text-muted-foreground truncate">
                                             {inspeccion.cliente_nombre}
                                         </div>
                                     </div>

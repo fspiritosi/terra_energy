@@ -3,10 +3,12 @@
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, Calendar, List } from "lucide-react"
 import { CalendarioGrid } from "./calendario-grid"
 import { getInspeccionesType } from "@/components/inspecciones/components"
-// import { Inspeccion } from "@/components/inspecciones/components/actions"
+import { CalendarioAgenda } from "./calendario-agenda"
+
+type VistaCalendario = 'calendario' | 'agenda'
 
 interface CalendarioViewProps {
     inspecciones: getInspeccionesType
@@ -19,6 +21,7 @@ const meses = [
 
 export function CalendarioView({ inspecciones }: CalendarioViewProps) {
     const [fechaActual, setFechaActual] = useState(new Date())
+    const [vista, setVista] = useState<VistaCalendario>('calendario')
 
     const mesActual = fechaActual.getMonth()
     const añoActual = fechaActual.getFullYear()
@@ -56,41 +59,72 @@ export function CalendarioView({ inspecciones }: CalendarioViewProps) {
                             Vista mensual de las inspecciones programadas
                         </CardDescription>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={irAHoy}
-                        >
-                            Hoy
-                        </Button>
-                        <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-4">
+                        {/* Selector de vista */}
+                        <div className="flex items-center gap-1 border rounded-lg p-1">
+                            <Button
+                                variant={vista === 'calendario' ? 'default' : 'ghost'}
+                                size="sm"
+                                onClick={() => setVista('calendario')}
+                                className="h-8"
+                            >
+                                <Calendar className="h-4 w-4 mr-1" />
+                                Calendario
+                            </Button>
+                            <Button
+                                variant={vista === 'agenda' ? 'default' : 'ghost'}
+                                size="sm"
+                                onClick={() => setVista('agenda')}
+                                className="h-8"
+                            >
+                                <List className="h-4 w-4 mr-1" />
+                                Agenda
+                            </Button>
+                        </div>
+
+                        <div className="flex items-center gap-2">
                             <Button
                                 variant="outline"
-                                size="icon"
-                                onClick={() => cambiarMes('anterior')}
+                                size="sm"
+                                onClick={irAHoy}
                             >
-                                <ChevronLeft className="h-4 w-4" />
+                                Hoy
                             </Button>
-                            <div className="min-w-[140px] text-center font-medium">
-                                {meses[mesActual]} {añoActual}
+                            <div className="flex items-center gap-1">
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => cambiarMes('anterior')}
+                                >
+                                    <ChevronLeft className="h-4 w-4" />
+                                </Button>
+                                <div className="min-w-[140px] text-center font-medium">
+                                    {meses[mesActual]} {añoActual}
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => cambiarMes('siguiente')}
+                                >
+                                    <ChevronRight className="h-4 w-4" />
+                                </Button>
                             </div>
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={() => cambiarMes('siguiente')}
-                            >
-                                <ChevronRight className="h-4 w-4" />
-                            </Button>
                         </div>
                     </div>
                 </div>
             </CardHeader>
             <CardContent>
-                <CalendarioGrid
-                    fecha={fechaActual}
-                    inspecciones={inspeccionesDelMes}
-                />
+                {vista === 'calendario' ? (
+                    <CalendarioGrid
+                        fecha={fechaActual}
+                        inspecciones={inspeccionesDelMes}
+                    />
+                ) : (
+                    <CalendarioAgenda
+                        fecha={fechaActual}
+                        inspecciones={inspeccionesDelMes}
+                    />
+                )}
             </CardContent>
         </Card>
     )

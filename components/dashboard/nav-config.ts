@@ -4,13 +4,13 @@ import {
   Calendar,
   Users,
   ClipboardCheck,
-  Settings,
   FolderOpen,
   BarChart3,
   UserPlus,
   Wrench,
   List,
   Tags,
+  Settings2,
 } from "lucide-react";
 
 export interface NavItem {
@@ -52,25 +52,15 @@ export const operacionNavItems: NavItem[] = [
     url: "/dashboard",
     icon: LayoutDashboard,
   },
-  {
-    title: "Solicitudes de Inspección",
-    url: "/dashboard/solicitudes",
-    icon: FileText,
-  },
-  {
-    title: "Calendario",
-    url: "/dashboard/calendario",
-    icon: Calendar,
-    disabled: false,
-  },
+
   {
     title: "Inspecciones",
     icon: ClipboardCheck,
     items: [
       {
-        title: "Equipos de Inspecciones",
-        url: "/dashboard/equipos",
-        icon: Wrench,
+        title: "Solicitudes",
+        url: "/dashboard/solicitudes",
+        icon: FileText,
       },
       {
         title: "Listado de Inspecciones",
@@ -78,32 +68,44 @@ export const operacionNavItems: NavItem[] = [
         icon: List,
       },
       {
+        title: "Calendario",
+        url: "/dashboard/calendario",
+        icon: Calendar,
+        disabled: false,
+      },
+    ],
+  },
+
+  {
+    title: "Administración",
+    icon: Settings2,
+    items: [
+      {
+        title: "Usuarios",
+        url: "/dashboard/usuarios",
+        icon: UserPlus,
+      },
+      {
+        title: "Clientes",
+        url: "/dashboard/clientes",
+        icon: Users,
+      },
+      {
         title: "Tipos de Inspecciones",
         url: "/dashboard/inspecciones/tipos_de_inspeccion",
         icon: Tags,
       },
+      {
+        title: "Equipos de Inspecciones",
+        url: "/dashboard/equipos",
+        icon: Wrench,
+      },
     ],
-  },
-  {
-    title: "Clientes",
-    url: "/dashboard/clientes",
-    icon: Users,
-  },
-  {
-    title: "Usuarios",
-    url: "/dashboard/usuarios",
-    icon: UserPlus,
   },
   {
     title: "Reportes",
     url: "/dashboard/reportes",
     icon: BarChart3,
-    disabled: true,
-  },
-  {
-    title: "Configuración",
-    url: "/dashboard/configuracion",
-    icon: Settings,
     disabled: true,
   },
 ];

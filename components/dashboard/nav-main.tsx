@@ -39,7 +39,7 @@ function NavItemComponent({ item, pathname }: { item: NavItem; pathname: string 
                             disabled={item.disabled}
                         >
                             {item.icon && <item.icon />}
-                            <span>{item.title}</span>
+                            <span className="whitespace-normal break-words">{item.title}</span>
                             <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
                         </SidebarMenuButton>
                     </CollapsibleTrigger>
@@ -54,12 +54,12 @@ function NavItemComponent({ item, pathname }: { item: NavItem; pathname: string 
                                         {subItem.disabled ? (
                                             <div className="flex items-center gap-2 opacity-50 cursor-not-allowed">
                                                 {subItem.icon && <subItem.icon />}
-                                                <span>{subItem.title}</span>
+                                                <span className="whitespace-normal break-words">{subItem.title}</span>
                                             </div>
                                         ) : (
                                             <Link href={subItem.url!}>
                                                 {subItem.icon && <subItem.icon />}
-                                                <span>{subItem.title}</span>
+                                                <span className="whitespace-normal break-words max-w-full">{subItem.title}</span>
                                             </Link>
                                         )}
                                     </SidebarMenuSubButton>
