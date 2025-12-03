@@ -63,7 +63,7 @@ type SolicitudCompleta = {
 export async function getSolicitudes(): Promise<SolicitudCompleta[]> {
   const supabase = await createClient();
 
-  // Obtener solicitudes con todas las relaciones
+  // Obtener solicitudes con todas las relaciones (excepto trabajos que haremos por separado)
   const { data: solicitudes, error } = await supabase
     .from("solicitudes_inspeccion")
     .select(
@@ -91,11 +91,7 @@ export async function getSolicitudes(): Promise<SolicitudCompleta[]> {
       ),
       trabajos:solicitud_trabajos (
         id,
-        tipo_inspeccion:tipo_de_inspeccion (
-          id,
-          nombre,
-          codigo
-        )
+        tipo_inspeccion_id
       ),
       imagenes:solicitud_imagenes (
         id,
@@ -118,12 +114,43 @@ export async function getSolicitudes(): Promise<SolicitudCompleta[]> {
 
   if (!solicitudes) return [];
 
+  // Obtener todos los tipos de inspección necesarios
+  const tipoIds = new Set<string>();
+  solicitudes.forEach((solicitud) => {
+    if (solicitud.trabajos) {
+      solicitud.trabajos.forEach((trabajo) => {
+        if (trabajo.tipo_inspeccion_id) {
+          tipoIds.add(trabajo.tipo_inspeccion_id);
+        }
+      });
+    }
+  });
+
+  let tiposMap = new Map<string, { id: string; nombre: string; codigo: string }>();
+  if (tipoIds.size > 0) {
+    const { data: tipos, error: tiposError } = await supabase
+      .from("tipos_inspeccion_checklist")
+      .select("id, nombre, codigo")
+      .in("id", Array.from(tipoIds));
+
+    if (!tiposError && tipos) {
+      tipos.forEach((tipo) => {
+        tiposMap.set(tipo.id, tipo);
+      });
+    }
+  }
+
   // Procesar y ordenar los datos
   const solicitudesProcesadas: SolicitudCompleta[] = solicitudes.map(
     (solicitud) => ({
       ...solicitud,
       items: (solicitud.items || []).sort((a, b) => a.orden - b.orden),
-      trabajos: solicitud.trabajos || [],
+      trabajos: (solicitud.trabajos || []).map((trabajo: any) => ({
+        id: trabajo.id,
+        tipo_inspeccion: trabajo.tipo_inspeccion_id
+          ? tiposMap.get(trabajo.tipo_inspeccion_id) || null
+          : null,
+      })),
       aprobador: solicitud.aprobador || null,
     })
   );
@@ -135,10 +162,10 @@ export async function getTiposInspeccion() {
   const supabase = await createClient();
 
   const { data: tipos, error } = await supabase
-    .from("tipo_de_inspeccion")
+    .from("tipos_inspeccion_checklist")
     .select("id, nombre, codigo, descripcion")
     .eq("is_active", true)
-    .order("nombre");
+    .order("orden, nombre");
 
   if (error) {
     console.error("Error fetching tipos de inspección:", error);

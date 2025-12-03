@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Calendar, MoreHorizontal } from "lucide-react"
+import { Calendar, MoreHorizontal, ClipboardCheck } from "lucide-react"
+import { useRouter } from "next/navigation"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -42,6 +43,8 @@ const estadoLabels = {
 }
 
 export function InspeccionesTable({ data, onReprogramar, onEstadoChange }: InspeccionesTableProps) {
+    const router = useRouter()
+
     if (data.length === 0) {
         return (
             <div className="text-center py-6">
@@ -106,9 +109,15 @@ export function InspeccionesTable({ data, onReprogramar, onEstadoChange }: Inspe
                                             </DropdownMenuItem>
                                         )}
                                         {inspeccion.estado === 'en_progreso' && (
-                                            <DropdownMenuItem onClick={() => onEstadoChange(inspeccion.id, 'completada')}>
-                                                Marcar Completada
-                                            </DropdownMenuItem>
+                                            <>
+                                                <DropdownMenuItem onClick={() => router.push(`/dashboard/inspecciones/${inspeccion.id}/completar`)}>
+                                                    <ClipboardCheck className="mr-2 h-4 w-4" />
+                                                    Completar Checklist
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => onEstadoChange(inspeccion.id, 'completada')}>
+                                                    Marcar Completada
+                                                </DropdownMenuItem>
+                                            </>
                                         )}
                                         {(inspeccion.estado === 'programada' || inspeccion.estado === 'en_progreso') && (
                                             <DropdownMenuItem

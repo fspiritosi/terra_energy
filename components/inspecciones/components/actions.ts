@@ -10,7 +10,8 @@ export async function getInspecciones() {
   const { data, error } = await supabase
     .from("inspecciones")
     .select("*")
-    .order("fecha_programada", { ascending: true });
+    .order("fecha_programada", { ascending: true })
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.error("Error fetching inspecciones:", error);

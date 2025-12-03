@@ -105,6 +105,7 @@ return (
         />
 </CardContent>
 <CardFooter className="flex flex-col items-start gap-3 border-t px-4 !pt-4">
+
 <div className="flex w-full items-center justify-between px-1">
 <div className="text-sm font-medium">
 {date?.toLocaleDateString("en-US", {
@@ -140,3 +141,10 @@ year: "numeric",
 </Card>
 )
 }
+
+el trabajos a relaizar es opcional
+El equipo define el tipo de trbajo
+las imagenes no se ven en el deploy
+Checklist para las inpecciones
+Equipos de inpecciones(cual use para hacer el trajao)
+Nueva tabla para equipos del cliente (equipos a inpeccionar) (los que el cliente te pasa)

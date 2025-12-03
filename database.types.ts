@@ -14,6 +14,127 @@ export type Database = {
   }
   public: {
     Tables: {
+      checklist_requisitos: {
+        Row: {
+          created_at: string | null
+          descripcion: string
+          id: string
+          norma_aplicable: string | null
+          orden: number
+          seccion_id: string | null
+          subcategoria_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          descripcion: string
+          id?: string
+          norma_aplicable?: string | null
+          orden?: number
+          seccion_id?: string | null
+          subcategoria_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          descripcion?: string
+          id?: string
+          norma_aplicable?: string | null
+          orden?: number
+          seccion_id?: string | null
+          subcategoria_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_requisitos_seccion_id_fkey"
+            columns: ["seccion_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_secciones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_requisitos_subcategoria_id_fkey"
+            columns: ["subcategoria_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_subcategorias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_secciones: {
+        Row: {
+          created_at: string | null
+          id: string
+          nombre: string
+          orden: number
+          tipo_inspeccion_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          nombre: string
+          orden?: number
+          tipo_inspeccion_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          nombre?: string
+          orden?: number
+          tipo_inspeccion_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_secciones_tipo_inspeccion_id_fkey"
+            columns: ["tipo_inspeccion_id"]
+            isOneToOne: false
+            referencedRelation: "tipos_inspeccion_checklist"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_subcategorias: {
+        Row: {
+          created_at: string | null
+          id: string
+          nombre: string
+          norma_aplicable: string | null
+          orden: number
+          seccion_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          nombre: string
+          norma_aplicable?: string | null
+          orden?: number
+          seccion_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          nombre?: string
+          norma_aplicable?: string | null
+          orden?: number
+          seccion_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_subcategorias_seccion_id_fkey"
+            columns: ["seccion_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_secciones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clientes: {
         Row: {
           created_at: string
@@ -82,6 +203,70 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      inspeccion_respuestas: {
+        Row: {
+          created_at: string | null
+          id: string
+          inspeccion_id: string
+          requisito_id: string
+          tipo_respuesta_id: string
+          updated_at: string | null
+          valor_booleano: boolean | null
+          valor_fecha: string | null
+          valor_numero: number | null
+          valor_texto: string | null
+          valor_tiempo: unknown
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          inspeccion_id: string
+          requisito_id: string
+          tipo_respuesta_id: string
+          updated_at?: string | null
+          valor_booleano?: boolean | null
+          valor_fecha?: string | null
+          valor_numero?: number | null
+          valor_texto?: string | null
+          valor_tiempo?: unknown
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          inspeccion_id?: string
+          requisito_id?: string
+          tipo_respuesta_id?: string
+          updated_at?: string | null
+          valor_booleano?: boolean | null
+          valor_fecha?: string | null
+          valor_numero?: number | null
+          valor_texto?: string | null
+          valor_tiempo?: unknown
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inspeccion_respuestas_inspeccion_id_fkey"
+            columns: ["inspeccion_id"]
+            isOneToOne: false
+            referencedRelation: "inspecciones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inspeccion_respuestas_requisito_id_fkey"
+            columns: ["requisito_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_requisitos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inspeccion_respuestas_tipo_respuesta_id_fkey"
+            columns: ["tipo_respuesta_id"]
+            isOneToOne: false
+            referencedRelation: "tipos_respuesta"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       inspecciones: {
         Row: {
@@ -184,6 +369,45 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      requisito_tipos_respuesta: {
+        Row: {
+          created_at: string | null
+          id: string
+          orden: number
+          requisito_id: string
+          tipo_respuesta_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          orden?: number
+          requisito_id: string
+          tipo_respuesta_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          orden?: number
+          requisito_id?: string
+          tipo_respuesta_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "requisito_tipos_respuesta_requisito_id_fkey"
+            columns: ["requisito_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_requisitos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requisito_tipos_respuesta_tipo_respuesta_id_fkey"
+            columns: ["tipo_respuesta_id"]
+            isOneToOne: false
+            referencedRelation: "tipos_respuesta"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       solicitud_imagenes: {
         Row: {
@@ -436,6 +660,69 @@ export type Database = {
         }
         Relationships: []
       }
+      tipos_inspeccion_checklist: {
+        Row: {
+          codigo: string
+          created_at: string | null
+          descripcion: string | null
+          id: string
+          is_active: boolean | null
+          nombre: string
+          orden: number
+          updated_at: string | null
+        }
+        Insert: {
+          codigo: string
+          created_at?: string | null
+          descripcion?: string | null
+          id?: string
+          is_active?: boolean | null
+          nombre: string
+          orden?: number
+          updated_at?: string | null
+        }
+        Update: {
+          codigo?: string
+          created_at?: string | null
+          descripcion?: string | null
+          id?: string
+          is_active?: boolean | null
+          nombre?: string
+          orden?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      tipos_respuesta: {
+        Row: {
+          codigo: string
+          created_at: string | null
+          descripcion: string | null
+          id: string
+          nombre: string
+          tipo_dato: string
+          updated_at: string | null
+        }
+        Insert: {
+          codigo: string
+          created_at?: string | null
+          descripcion?: string | null
+          id?: string
+          nombre: string
+          tipo_dato: string
+          updated_at?: string | null
+        }
+        Update: {
+          codigo?: string
+          created_at?: string | null
+          descripcion?: string | null
+          id?: string
+          nombre?: string
+          tipo_dato?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       usuarios_clientes: {
         Row: {
           cliente_id: string
@@ -520,6 +807,30 @@ export type Database = {
       generate_numero_solicitud:
         | { Args: never; Returns: string }
         | { Args: { cliente_id_param: string }; Returns: string }
+      get_tipo_inspeccion_checklist_completo: {
+        Args: { tipo_id: string }
+        Returns: Json
+      }
+      get_tipos_inspeccion_checklist_activos: {
+        Args: never
+        Returns: {
+          codigo: string
+          descripcion: string
+          id: string
+          nombre: string
+          orden: number
+        }[]
+      }
+      get_tipos_respuesta: {
+        Args: never
+        Returns: {
+          codigo: string
+          descripcion: string
+          id: string
+          nombre: string
+          tipo_dato: string
+        }[]
+      }
       log_debug_solicitud: { Args: { mensaje: string }; Returns: boolean }
     }
     Enums: {
