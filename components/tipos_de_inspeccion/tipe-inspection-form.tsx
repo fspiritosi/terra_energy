@@ -73,7 +73,7 @@ export function TipoDeInspeccionForm({
                     nombre: tipoDeInspeccion.nombre,
                     codigo: tipoDeInspeccion.codigo,
                     descripcion: tipoDeInspeccion.descripcion || "",
-                    is_active: tipoDeInspeccion.is_active,
+                    is_active: tipoDeInspeccion.is_active ?? true,
                 })
             } else {
                 form.reset({

@@ -549,7 +549,7 @@ export type Database = {
             foreignKeyName: "solicitud_trabajos_tipo_inspeccion_id_fkey"
             columns: ["tipo_inspeccion_id"]
             isOneToOne: false
-            referencedRelation: "tipo_de_inspeccion"
+            referencedRelation: "tipos_inspeccion_checklist"
             referencedColumns: ["id"]
           },
         ]
@@ -669,6 +669,7 @@ export type Database = {
           is_active: boolean | null
           nombre: string
           orden: number
+          slug: string | null
           updated_at: string | null
         }
         Insert: {
@@ -679,6 +680,7 @@ export type Database = {
           is_active?: boolean | null
           nombre: string
           orden?: number
+          slug?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -689,6 +691,7 @@ export type Database = {
           is_active?: boolean | null
           nombre?: string
           orden?: number
+          slug?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -799,6 +802,7 @@ export type Database = {
       }
     }
     Functions: {
+      generar_slug: { Args: { texto: string }; Returns: string }
       generate_client_initials: {
         Args: { client_name: string }
         Returns: string

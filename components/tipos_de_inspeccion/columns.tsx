@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge"
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { TipoDeInspeccionType } from "./actions"
 import { TipoDeInspeccionRowActions } from "./TipoDeInspeccionRowActions "
+import { Button } from "@/components/ui/button"
+import { Eye } from "lucide-react"
 
 export const columns: ColumnDef<TipoDeInspeccionType>[] = [
     {

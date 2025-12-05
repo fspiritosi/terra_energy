@@ -148,3 +148,6 @@ las imagenes no se ven en el deploy
 Checklist para las inpecciones
 Equipos de inpecciones(cual use para hacer el trajao)
 Nueva tabla para equipos del cliente (equipos a inpeccionar) (los que el cliente te pasa)
+
+En el tipos de inpecciones al darle click ver el checklist y las inspecciones asignadas a este
+en la seccion deiuliminacion de vrificar intensidad pedir el valor emdido

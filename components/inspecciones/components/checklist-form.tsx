@@ -228,3 +228,4 @@ export function ChecklistForm({ checklist, respuestas, onRespuestaChange }: Chec
   );
 }
 
+
