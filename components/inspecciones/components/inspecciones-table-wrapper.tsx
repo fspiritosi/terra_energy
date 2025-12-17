@@ -8,14 +8,31 @@ import { InspeccionesTable } from "./inspecciones-table"
 import { ReprogramarDialog } from "./reprogramar-dialog"
 import { Database } from "@/database.types"
 
-interface InspeccionesTableWrapperProps {
-    data: getInspeccionesType
+interface DocumentoInfo {
+    id: string;
+    numero_documento: string;
+    resultado: string;
+    inspeccion_id: string;
 }
 
-export function InspeccionesTableWrapper({ data }: InspeccionesTableWrapperProps) {
+interface InspeccionesTableWrapperProps {
+    data: getInspeccionesType
+    documentos?: DocumentoInfo[]
+}
+
+export function InspeccionesTableWrapper({ data, documentos }: InspeccionesTableWrapperProps) {
     const [selectedInspeccion, setSelectedInspeccion] = useState<getInspeccionesType[number] | null>(null)
     const [isReprogramarOpen, setIsReprogramarOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+
+    // Crear un Map de documentos por inspeccion_id para búsqueda rápida
+    const documentosMap = new Map(
+        (documentos || []).map(doc => [doc.inspeccion_id, {
+            id: doc.id,
+            numero_documento: doc.numero_documento,
+            resultado: doc.resultado
+        }])
+    )
 
     const handleReprogramar = (inspeccion: getInspeccionesType[number]) => {
         setSelectedInspeccion(inspeccion)
@@ -68,6 +85,7 @@ export function InspeccionesTableWrapper({ data }: InspeccionesTableWrapperProps
                 <CardContent>
                     <InspeccionesTable
                         data={data}
+                        documentos={documentosMap}
                         onReprogramar={handleReprogramar}
                         onEstadoChange={handleEstadoChange}
                     />

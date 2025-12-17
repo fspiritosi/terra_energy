@@ -177,6 +177,103 @@ export type Database = {
         }
         Relationships: []
       }
+      documentos_inspeccion: {
+        Row: {
+          cliente_acepto: boolean | null
+          cliente_acepto_fecha: string | null
+          created_at: string | null
+          fecha_documento: string
+          fecha_vencimiento: string | null
+          hash_documento: string | null
+          id: string
+          inspeccion_id: string
+          numero_documento: string
+          observaciones_generales: string | null
+          operador_id: string | null
+          operador_nombre: string | null
+          pdf_storage_path: string | null
+          pdf_url: string | null
+          qr_imagen_url: string | null
+          qr_payload: string
+          resultado: string
+          revision: string | null
+          supervisor_id: string | null
+          supervisor_nombre: string | null
+          tipo_documento: string
+          updated_at: string | null
+        }
+        Insert: {
+          cliente_acepto?: boolean | null
+          cliente_acepto_fecha?: string | null
+          created_at?: string | null
+          fecha_documento?: string
+          fecha_vencimiento?: string | null
+          hash_documento?: string | null
+          id?: string
+          inspeccion_id: string
+          numero_documento: string
+          observaciones_generales?: string | null
+          operador_id?: string | null
+          operador_nombre?: string | null
+          pdf_storage_path?: string | null
+          pdf_url?: string | null
+          qr_imagen_url?: string | null
+          qr_payload: string
+          resultado?: string
+          revision?: string | null
+          supervisor_id?: string | null
+          supervisor_nombre?: string | null
+          tipo_documento?: string
+          updated_at?: string | null
+        }
+        Update: {
+          cliente_acepto?: boolean | null
+          cliente_acepto_fecha?: string | null
+          created_at?: string | null
+          fecha_documento?: string
+          fecha_vencimiento?: string | null
+          hash_documento?: string | null
+          id?: string
+          inspeccion_id?: string
+          numero_documento?: string
+          observaciones_generales?: string | null
+          operador_id?: string | null
+          operador_nombre?: string | null
+          pdf_storage_path?: string | null
+          pdf_url?: string | null
+          qr_imagen_url?: string | null
+          qr_payload?: string
+          resultado?: string
+          revision?: string | null
+          supervisor_id?: string | null
+          supervisor_nombre?: string | null
+          tipo_documento?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documentos_inspeccion_inspeccion_id_fkey"
+            columns: ["inspeccion_id"]
+            isOneToOne: false
+            referencedRelation: "inspecciones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documentos_inspeccion_operador_id_fkey"
+            columns: ["operador_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios_auth"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documentos_inspeccion_supervisor_id_fkey"
+            columns: ["supervisor_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios_auth"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       equipos_inspeccion: {
         Row: {
           created_at: string | null

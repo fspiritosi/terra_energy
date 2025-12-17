@@ -5,9 +5,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Save, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Save, CheckCircle2, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   getChecklistCompleto,
@@ -18,6 +17,7 @@ import {
 } from "./checklist-actions";
 import { ChecklistForm } from "./checklist-form";
 import { updateInspeccion } from "./actions";
+import { crearDocumentoInspeccion } from "../pdf/documento-actions";
 
 interface CompletarChecklistClientProps {
   inspeccionId: string;
@@ -159,7 +159,31 @@ export function CompletarChecklistClient({
         estado: "completada",
       });
 
-      toast.success("Inspección completada exitosamente");
+      // Determinar resultado basado en respuestas booleanas
+      const respuestasBooleanas = respuestasArray.filter(
+        (r) => r.valor_booleano !== undefined && r.valor_booleano !== null
+      );
+      const hayRechazos = respuestasBooleanas.some((r) => r.valor_booleano === false);
+      const resultado = hayRechazos ? "rechazado" : "aprobado";
+
+      // Generar documento PDF
+      toast.info("Generando documento de inspección...");
+      const documento = await crearDocumentoInspeccion(inspeccionId, resultado);
+
+      if (documento) {
+        toast.success(
+          `Inspección completada. Documento ${documento.numero_documento} generado exitosamente.`,
+          {
+            action: {
+              label: "Ver PDF",
+              onClick: () => window.open(`/api/documentos/${documento.id}/pdf`, "_blank"),
+            },
+          }
+        );
+      } else {
+        toast.success("Inspección completada exitosamente");
+      }
+
       router.push("/dashboard/inspecciones");
     } catch (error) {
       console.error("Error completing inspection:", error);
@@ -224,8 +248,12 @@ export function CompletarChecklistClient({
             Guardar
           </Button>
           <Button onClick={handleCompletar} disabled={isSaving}>
-            <CheckCircle2 className="mr-2 h-4 w-4" />
-            Completar Inspección
+            {isSaving ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+            )}
+            {isSaving ? "Procesando..." : "Completar Inspección"}
           </Button>
         </div>
       </div>

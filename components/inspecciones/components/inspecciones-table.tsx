@@ -10,20 +10,27 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Calendar, MoreHorizontal, ClipboardCheck } from "lucide-react"
+import { Calendar, MoreHorizontal, ClipboardCheck, FileText, ExternalLink } from "lucide-react"
 import { useRouter } from "next/navigation"
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { getInspeccionesType } from "./actions"
 import { Database } from "@/database.types"
-// import { Inspeccion } from "./actions"
+
+interface DocumentoInfo {
+    id: string;
+    numero_documento: string;
+    resultado: string;
+}
 
 interface InspeccionesTableProps {
     data: getInspeccionesType
+    documentos?: Map<string, DocumentoInfo> // Map de inspeccion_id a documento
     onReprogramar: (inspeccion: getInspeccionesType[number]) => void
     onEstadoChange: (inspeccionId: string, nuevoEstado: Database['public']['Enums']['estado_inspeccion']) => void
 }
@@ -42,8 +49,16 @@ const estadoLabels = {
     cancelada: "Cancelada"
 }
 
-export function InspeccionesTable({ data, onReprogramar, onEstadoChange }: InspeccionesTableProps) {
+export function InspeccionesTable({ data, documentos, onReprogramar, onEstadoChange }: InspeccionesTableProps) {
     const router = useRouter()
+
+    const handleDownloadPdf = (documentoId: string) => {
+        window.open(`/api/documentos/${documentoId}/pdf`, '_blank')
+    }
+
+    const handleVerificarDocumento = (documentoId: string) => {
+        window.open(`/verificar/${documentoId}`, '_blank')
+    }
 
     if (data.length === 0) {
         return (
@@ -126,6 +141,19 @@ export function InspeccionesTable({ data, onReprogramar, onEstadoChange }: Inspe
                                             >
                                                 Cancelar
                                             </DropdownMenuItem>
+                                        )}
+                                        {inspeccion.estado === 'completada' && documentos?.has(inspeccion.id) && (
+                                            <>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={() => handleDownloadPdf(documentos.get(inspeccion.id)!.id)}>
+                                                    <FileText className="mr-2 h-4 w-4" />
+                                                    Descargar PDF
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => handleVerificarDocumento(documentos.get(inspeccion.id)!.id)}>
+                                                    <ExternalLink className="mr-2 h-4 w-4" />
+                                                    Ver Verificación
+                                                </DropdownMenuItem>
+                                            </>
                                         )}
                                     </DropdownMenuContent>
                                 </DropdownMenu>
