@@ -123,17 +123,6 @@ export function InspeccionesTable({ data, documentos, onReprogramar, onEstadoCha
                                                 Iniciar Inspección
                                             </DropdownMenuItem>
                                         )}
-                                        {inspeccion.estado === 'en_progreso' && (
-                                            <>
-                                                <DropdownMenuItem onClick={() => router.push(`/dashboard/inspecciones/${inspeccion.id}/completar`)}>
-                                                    <ClipboardCheck className="mr-2 h-4 w-4" />
-                                                    Completar Checklist
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => onEstadoChange(inspeccion.id, 'completada')}>
-                                                    Marcar Completada
-                                                </DropdownMenuItem>
-                                            </>
-                                        )}
                                         {(inspeccion.estado === 'programada' || inspeccion.estado === 'en_progreso') && (
                                             <DropdownMenuItem
                                                 onClick={() => onEstadoChange(inspeccion.id, 'cancelada')}
