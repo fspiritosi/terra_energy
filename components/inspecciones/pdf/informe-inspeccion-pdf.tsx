@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Document,
   Page,
@@ -27,7 +25,8 @@ Font.register({
 
 // Colores de la marca Terra Energy
 const colors = {
-  primary: "#B8860B", // Dorado/Marrón del logo
+  primary: "#8B6914", // Dorado oscuro del logo
+  primaryLight: "#B8860B", // Dorado/Marrón claro
   secondary: "#1a1a1a",
   success: "#22c55e",
   danger: "#ef4444",
@@ -41,70 +40,90 @@ const styles = StyleSheet.create({
   page: {
     fontFamily: "Roboto",
     fontSize: 9,
-    paddingTop: 20,
-    paddingBottom: 60,
-    paddingHorizontal: 30,
+    paddingTop: 0,
+    paddingBottom: 130, // Espacio para footerTop (30px) + footer de firmas (80px) + margen
+    paddingHorizontal: 0,
   },
-  // Header
+  pageContent: {
+    paddingHorizontal: 30,
+    paddingTop: 10,
+    paddingBottom: 0,
+    marginBottom: 0,
+  },
+  // Header - ocupa 100% del ancho sin padding
   header: {
     flexDirection: "row",
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.border,
-    marginBottom: 10,
+    marginBottom: 0,
   },
   headerLogoContainer: {
-    width: "20%",
-    padding: 10,
-    borderRightWidth: 1,
+    width: "22%",
+    padding: 8,
+    borderRightWidth: 2,
     borderColor: colors.border,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#ffffff",
   },
   headerLogo: {
-    width: 80,
-    height: 40,
+    width: 100,
+    height: 50,
+    objectFit: "contain",
   },
   headerTitleContainer: {
-    width: "60%",
-    padding: 15,
+    width: "56%",
+    padding: 10,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#ffffff",
   },
   headerTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
     color: colors.primary,
     textAlign: "center",
+    textTransform: "uppercase",
   },
   headerCodeContainer: {
-    width: "20%",
-    borderLeftWidth: 1,
+    width: "22%",
+    borderLeftWidth: 2,
     borderColor: colors.border,
+    backgroundColor: "#ffffff",
   },
   headerCodeRow: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 2,
     borderColor: colors.border,
-    padding: 5,
-    minHeight: 20,
+    padding: 6,
+    minHeight: 22,
+    justifyContent: "center",
+  },
+  headerCodeRowLast: {
+    padding: 6,
+    minHeight: 22,
+    justifyContent: "center",
   },
   headerCodeText: {
-    fontSize: 8,
+    fontSize: 9,
+    fontWeight: "bold",
   },
-  // Info del documento
+  // Info del documento - ocupa 100% del ancho sin padding
   infoGrid: {
     flexDirection: "row",
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.border,
-    borderTopWidth: 0,
+    borderTopWidth: 2, // Borde arriba para la sección de CLIENTE
+    width: "100%",
   },
   infoRow: {
     flexDirection: "row",
-    borderBottomWidth: 1,
+    borderBottomWidth: 2,
     borderColor: colors.border,
+    width: "100%",
   },
   infoCell: {
     padding: 5,
-    borderRightWidth: 1,
+    borderRightWidth: 2,
     borderColor: colors.border,
   },
   infoLabel: {
@@ -124,28 +143,43 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
   },
-  // Footer con firmas
-  footer: {
+  // Footer - sección superior (solo primera página) - posicionada absolutamente
+  footerTop: {
     position: "absolute",
-    bottom: 20,
-    left: 30,
-    right: 30,
+    bottom: 110, // 30px arriba del footer de firmas (80px altura + 30px margen)
+    left: 0,
+    right: 0,
+    width: "100%",
   },
-  footerRow: {
+  footerTopRow: {
     flexDirection: "row",
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.border,
   },
-  footerCell: {
+  footerTopCell: {
     flex: 1,
     padding: 5,
-    borderRightWidth: 1,
+    borderRightWidth: 2,
     borderColor: colors.border,
     minHeight: 25,
   },
+  // Footer con firmas (todas las páginas) - fixed para que siempre esté en el bottom
+  footer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    width: "100%",
+    minHeight: 80,
+  },
+  footerRow: {
+    flexDirection: "row",
+    borderWidth: 2,
+    borderColor: colors.border,
+  },
   signatureBox: {
     flex: 1,
-    borderRightWidth: 1,
+    borderRightWidth: 2,
     borderColor: colors.border,
     minHeight: 80,
     padding: 5,
@@ -161,8 +195,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGray,
     padding: 8,
     marginTop: 10,
-    marginBottom: 5,
-    borderWidth: 1,
+    marginBottom: 0,
+    borderWidth: 2,
     borderColor: colors.border,
   },
   sectionTitleText: {
@@ -172,7 +206,7 @@ const styles = StyleSheet.create({
   },
   checklistItem: {
     flexDirection: "row",
-    borderWidth: 1,
+    borderWidth: 2,
     borderTopWidth: 0,
     borderColor: colors.border,
     minHeight: 25,
@@ -180,7 +214,7 @@ const styles = StyleSheet.create({
   checklistDescription: {
     flex: 3,
     padding: 5,
-    borderRightWidth: 1,
+    borderRightWidth: 2,
     borderColor: colors.border,
   },
   checklistResponse: {
@@ -191,12 +225,12 @@ const styles = StyleSheet.create({
   },
   checkMark: {
     color: colors.success,
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
   },
   crossMark: {
     color: colors.danger,
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
   },
   // Resultado
@@ -234,13 +268,15 @@ const styles = StyleSheet.create({
     padding: 8,
     textAlign: "center",
     fontWeight: "bold",
+    borderWidth: 2,
+    borderColor: colors.border,
   },
   imageGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-around",
     padding: 10,
-    borderWidth: 1,
+    borderWidth: 2,
     borderTopWidth: 0,
     borderColor: colors.border,
   },
@@ -283,6 +319,7 @@ export interface InformeData {
   // Datos del cliente
   clienteNombre: string;
   clienteLogo?: string;
+  terraLogoUrl?: string;
   contacto?: string;
   lugar: string;
   
@@ -325,27 +362,25 @@ function Header({ data }: { data: InformeData }) {
   return (
     <View style={styles.header}>
       <View style={styles.headerLogoContainer}>
-        {/* Logo placeholder - se puede reemplazar con imagen real */}
-        <Text style={{ fontSize: 10, fontWeight: "bold", color: colors.primary }}>
-          TERRA
-        </Text>
-        <Text style={{ fontSize: 6, color: colors.primary }}>
-          ENERGY SERVICES
-        </Text>
+        {data.terraLogoUrl && (
+          <Image style={styles.headerLogo} src={data.terraLogoUrl} />
+        )}
       </View>
       <View style={styles.headerTitleContainer}>
-        <Text style={styles.headerTitle}>INFORME DE ENSAYOS</Text>
-        <Text style={styles.headerTitle}>NO DESTRUCTIVOS</Text>
+        <Text style={styles.headerTitle}>{data.tipoInspeccion || "INFORME DE ENSAYOS NO DESTRUCTIVOS"}</Text>
       </View>
       <View style={styles.headerCodeContainer}>
         <View style={styles.headerCodeRow}>
           <Text style={styles.headerCodeText}>{data.codigoDocumento}</Text>
         </View>
         <View style={styles.headerCodeRow}>
-          <Text style={styles.headerCodeText}>Rev: {data.revision}</Text>
+          <Text style={styles.headerCodeText}>Rev. {data.revision}</Text>
         </View>
-        <View style={[styles.headerCodeRow, { borderBottomWidth: 0 }]}>
-          <Text style={styles.headerCodeText}>Pág: </Text>
+        <View style={styles.headerCodeRowLast}>
+          <Text
+            style={styles.headerCodeText}
+            render={({ pageNumber, totalPages }) => `Pág. ${pageNumber}/${totalPages}`}
+          />
         </View>
       </View>
     </View>
@@ -411,28 +446,38 @@ function QRSection({ data }: { data: InformeData }) {
   );
 }
 
-// Componente Footer con firmas
-function FooterSignatures({ data }: { data: InformeData }) {
+// Componente Footer superior (solo primera página)
+function FooterTop({ data }: { data: InformeData }) {
   return (
-    <View style={styles.footer}>
-      {/* Fila de revisión */}
-      <View style={styles.footerRow}>
-        <View style={styles.footerCell}>
+    <View style={styles.footerTop}>
+      <View style={styles.footerTopRow}>
+        <View style={styles.footerTopCell}>
           <Text style={styles.infoLabel}>REV.{data.revision}</Text>
         </View>
-        <View style={[styles.footerCell, { flex: 2 }]}>
+        <View style={[styles.footerTopCell, { flex: 2 }]}>
           <Text style={styles.infoLabel}>FECHA {data.fechaDocumento}</Text>
         </View>
-        <View style={[styles.footerCell, { flex: 2 }]}>
+        <View style={[styles.footerTopCell, { flex: 2 }]}>
+          <Text style={styles.infoLabel}>F. DE VENCIMIENTO:</Text>
+          <Text style={styles.infoValue}>{data.fechaVencimiento || "-"}</Text>
+        </View>
+        <View style={[styles.footerTopCell, { flex: 2 }]}>
           <Text style={styles.infoLabel}>REALIZÓ:</Text>
           <Text style={styles.infoValue}>{data.operadorNombre || ""}</Text>
         </View>
-        <View style={[styles.footerCell, { flex: 2, borderRightWidth: 0 }]}>
+        <View style={[styles.footerTopCell, { flex: 2, borderRightWidth: 0 }]}>
           <Text style={styles.infoLabel}>APROBÓ:</Text>
           <Text style={styles.infoValue}>{data.supervisorNombre || ""}</Text>
         </View>
       </View>
-      {/* Fila de firmas */}
+    </View>
+  );
+}
+
+// Componente Footer con firmas (todas las páginas) - fixed para que siempre esté en el bottom
+function FooterSignatures() {
+  return (
+    <View style={styles.footer} fixed>
       <View style={styles.footerRow}>
         <View style={styles.signatureBox}>
           <Text style={styles.signatureLabel}>(OPERADOR)</Text>
@@ -477,17 +522,21 @@ function ChecklistSection({ seccion }: { seccion: InformeData["secciones"][0] })
           </View>
           <View style={styles.checklistResponse}>
             {requisito.respuestas.map((resp, respIdx) => (
-              <Text key={respIdx}>
-                {typeof resp.valor === "boolean" ? (
-                  resp.valor ? (
-                    <Text style={styles.checkMark}>✓</Text>
+              <View key={respIdx} style={{ marginBottom: 2 }}>
+                <Text>
+                  {typeof resp.valor === "boolean" ? (
+                    resp.valor ? (
+                      <Text style={styles.checkMark}>OK</Text>
+                    ) : (
+                      <Text style={styles.crossMark}>NO</Text>
+                    )
+                  ) : resp.valor !== null && resp.valor !== undefined ? (
+                    String(resp.valor)
                   ) : (
-                    <Text style={styles.crossMark}>✗</Text>
-                  )
-                ) : (
-                  String(resp.valor || "-")
-                )}
-              </Text>
+                    "-"
+                  )}
+                </Text>
+              </View>
             ))}
           </View>
         </View>
@@ -539,56 +588,54 @@ export function InformeInspeccionPDF({ data }: { data: InformeData }) {
       {/* Página 1: Carátula */}
       <Page size="A4" style={styles.page}>
         <Header data={data} />
-        <View style={{ borderWidth: 1, borderTopWidth: 0, borderColor: colors.border }}>
-          <DocumentInfo data={data} />
+        {/* Contenedor flex para posicionar contenido abajo - solo primera página */}
+        <View style={{ flex: 1, justifyContent: "flex-end" }}>
+          {/* Info del documento - ocupa 100% del ancho sin padding (fuera del contenedor con padding) */}
+          <View style={styles.infoGrid}>
+            <DocumentInfo data={data} />
+          </View>
+          {/* QR con padding horizontal */}
+          <View style={{ paddingHorizontal: 30 }}>
+            <QRSection data={data} />
+          </View>
         </View>
-        <QRSection data={data} />
-        <FooterSignatures data={data} />
-        <Text
-          style={styles.pageNumber}
-          render={({ pageNumber, totalPages }) =>
-            `Página ${pageNumber} de ${totalPages}`
-          }
-          fixed
-        />
+        {/* Footer superior solo en primera página - posicionado absolutamente */}
+        <FooterTop data={data} />
+        {/* Footer de firmas en todas las páginas */}
+        <FooterSignatures />
       </Page>
 
       {/* Página 2+: Detalle del checklist */}
       <Page size="A4" style={styles.page}>
         <Header data={data} />
-        
-        {/* Resultado general */}
-        <ResultadoFinal resultado={data.resultado} />
-        
-        {/* Secciones del checklist */}
-        {data.secciones.map((seccion, idx) => (
-          <ChecklistSection key={idx} seccion={seccion} />
-        ))}
+        <View style={styles.pageContent}>
+          {/* Resultado general */}
+          <ResultadoFinal resultado={data.resultado} />
+          
+          {/* Secciones del checklist */}
+          {data.secciones.map((seccion, idx) => (
+            <ChecklistSection key={idx} seccion={seccion} />
+          ))}
 
-        {/* Observaciones */}
-        {data.observaciones && (
-          <View style={{ marginTop: 15 }}>
-            <Text style={styles.infoLabel}>OBSERVACIONES:</Text>
-            <Text style={styles.infoValue}>{data.observaciones}</Text>
-          </View>
-        )}
+          {/* Observaciones */}
+          {data.observaciones && (
+            <View style={{ marginTop: 15 }}>
+              <Text style={styles.infoLabel}>OBSERVACIONES:</Text>
+              <Text style={styles.infoValue}>{data.observaciones}</Text>
+            </View>
+          )}
 
-        {/* Imágenes */}
-        <ImageSection imagenes={data.imagenes || []} />
+          {/* Imágenes */}
+          <ImageSection imagenes={data.imagenes || []} />
 
-        {/* Disclaimer */}
-        <Text style={styles.disclaimer}>
-          LA REPRODUCCIÓN PARCIAL DE ESTE DOCUMENTO NO ES VÁLIDA. LOS RESULTADOS EN EL PRESENTE CERTIFICADO SE REFIEREN AL MOMENTO EN QUE SE REALIZARON LAS INSPECCIONES.
-          MAKING MKE NO SE RESPONSABILIZA DE LAS REACCIONES QUE PUEDAN DERIVARSE DEL USO INADECUADO DE LA INFORMACIÓN PRESENTADA.
-        </Text>
-
-        <Text
-          style={styles.pageNumber}
-          render={({ pageNumber, totalPages }) =>
-            `Página ${pageNumber} de ${totalPages}`
-          }
-          fixed
-        />
+          {/* Disclaimer */}
+          <Text style={styles.disclaimer}>
+            LA REPRODUCCIÓN PARCIAL DE ESTE DOCUMENTO NO ES VÁLIDA. LOS RESULTADOS EN EL PRESENTE CERTIFICADO SE REFIEREN AL MOMENTO EN QUE SE REALIZARON LAS INSPECCIONES.
+            TERRA ENERGY SERVICES NO SE RESPONSABILIZA DE LAS REACCIONES QUE PUEDAN DERIVARSE DEL USO INADECUADO DE LA INFORMACIÓN PRESENTADA.
+          </Text>
+        </View>
+        {/* Footer de firmas en todas las páginas */}
+        <FooterSignatures />
       </Page>
     </Document>
   );

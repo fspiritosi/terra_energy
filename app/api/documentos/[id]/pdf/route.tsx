@@ -162,12 +162,15 @@ export async function GET(
     }));
 
     // Generar QR
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://terra-energy.vercel.app";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const { qrDataUrl } = await generateDocumentQR(documentoId, baseUrl);
 
     // Preparar datos para el PDF
     const solicitud = inspeccion.solicitud as any;
     const tipoInspeccion = solicitud?.trabajos?.[0]?.tipo_inspeccion?.nombre || "Inspección General";
+    
+    // URL del logo (usar URL absoluta)
+    const logoUrl = `${baseUrl}/terra-logo-light.jpg`;
     const imagenes = solicitud?.imagenes?.map((img: any) => img.imagen_url) || [];
 
     const fechaInspeccion = inspeccion.fecha_completada
@@ -190,6 +193,7 @@ export async function GET(
       codigoDocumento: "MKG-R09-00 rev.00",
       clienteNombre: solicitud?.cliente?.nombre || inspeccion.cliente_nombre || "Cliente",
       clienteLogo: solicitud?.cliente?.logo,
+      terraLogoUrl: logoUrl,
       lugar: inspeccion.lugar || "",
       numeroInspeccion: inspeccion.numero_inspeccion || "",
       equipo: inspeccion.equipo || "",
