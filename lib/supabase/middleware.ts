@@ -51,7 +51,8 @@ export async function updateSession(request: NextRequest) {
   const isAuthRoute = request.nextUrl.pathname.startsWith("/auth");
   const isPublicRoute =
     request.nextUrl.pathname === "/" ||
-    request.nextUrl.pathname.startsWith("/login");
+    request.nextUrl.pathname.startsWith("/login") ||
+    request.nextUrl.pathname.startsWith("/verificar");
 
   if (
     !user &&

@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -25,7 +25,24 @@ export function LoginForm({
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const router = useRouter();
+
+  // Verificar si el usuario ya está autenticado
+  useEffect(() => {
+    async function checkAuth() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setIsAuthenticated(true);
+        setUserEmail(user.email || null);
+      } else {
+        setIsAuthenticated(false);
+      }
+    }
+    checkAuth();
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +57,7 @@ export function LoginForm({
       });
       if (error) throw error;
       router.push("/dashboard");
+      router.refresh();
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
@@ -47,6 +65,81 @@ export function LoginForm({
     }
   };
 
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setIsAuthenticated(false);
+    setUserEmail(null);
+    router.refresh();
+  };
+
+  // Mostrar loading mientras se verifica la autenticación
+  if (isAuthenticated === null) {
+    return (
+      <div className={cn("flex flex-col gap-6", className)} {...props}>
+        <div className="flex justify-center mb-8">
+          <Image
+            src="/Terra Energy Services - logo dorado.png"
+            alt="Terra Energy Services"
+            className="h-24 w-auto"
+            height={96}
+            width={96}
+          />
+        </div>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-center py-8">
+              <p className="text-muted-foreground">Verificando sesión...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Si el usuario ya está autenticado, mostrar opciones
+  if (isAuthenticated) {
+    return (
+      <div className={cn("flex flex-col gap-6", className)} {...props}>
+        <div className="flex justify-center mb-8">
+          <Image
+            src="/Terra Energy Services - logo dorado.png"
+            alt="Terra Energy Services"
+            className="h-24 w-auto"
+            height={96}
+            width={96}
+          />
+        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">Ya estás conectado</CardTitle>
+            <CardDescription>
+              {userEmail && `Sesión activa como: ${userEmail}`}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-4">
+              <Button
+                onClick={() => router.push("/dashboard")}
+                className="w-full"
+              >
+                Ir al Dashboard
+              </Button>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                className="w-full"
+              >
+                Cerrar Sesión
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Si no está autenticado, mostrar el formulario de login
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex justify-center mb-8">
