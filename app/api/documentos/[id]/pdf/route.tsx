@@ -202,6 +202,7 @@ export async function GET(
       imagenes,
       operadorNombre: documento.operador_nombre || undefined,
       supervisorNombre: documento.supervisor_nombre || undefined,
+      terraLogoUrl: `${baseUrl}/terra-logo-light.jpg`,
     };
 
     // Generar PDF
