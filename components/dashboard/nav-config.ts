@@ -106,6 +106,6 @@ export const operacionNavItems: NavItem[] = [
     title: "Reportes",
     url: "/dashboard/reportes",
     icon: BarChart3,
-    disabled: true,
+    disabled: false,
   },
 ];
