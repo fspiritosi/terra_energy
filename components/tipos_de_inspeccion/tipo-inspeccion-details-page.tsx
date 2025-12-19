@@ -11,6 +11,8 @@ import { type ChecklistCompleto } from "@/components/inspecciones/components/che
 import { getInspeccionesByTipoInspeccion, TipoDeInspeccionType } from "./actions";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Calendar, FileText, ArrowLeft } from "lucide-react";
+import moment from "moment";
+import "moment/locale/es";
 
 interface TipoInspeccionDetailsPageProps {
   tipoInspeccion: TipoDeInspeccionType;
@@ -227,12 +229,12 @@ export function TipoInspeccionDetailsPage({
                             </TableCell>
                             <TableCell className="whitespace-nowrap">
                               {inspeccion.fecha_programada
-                                ? new Date(inspeccion.fecha_programada).toLocaleDateString("es-ES")
+                                ? moment(inspeccion.fecha_programada).locale('es').format('DD/MM/YYYY')
                                 : "N/A"}
                             </TableCell>
                             <TableCell className="whitespace-nowrap">
                               {inspeccion.fecha_completada
-                                ? new Date(inspeccion.fecha_completada).toLocaleDateString("es-ES")
+                                ? moment(inspeccion.fecha_completada).locale('es').format('DD/MM/YYYY')
                                 : "N/A"}
                             </TableCell>
                           </TableRow>

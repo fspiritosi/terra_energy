@@ -7,6 +7,8 @@ import { DataTableColumnHeader } from "@/components/tables/data-table-column-hea
 import { VerificacionCompleta } from "./actions"
 import { ExternalLink } from "lucide-react"
 import Link from "next/link"
+import moment from "moment"
+import "moment/locale/es"
 
 const getResultadoBadge = (resultado: string) => {
     switch (resultado) {
@@ -127,11 +129,7 @@ export const columns: ColumnDef<VerificacionCompleta>[] = [
             if (!fecha) return <div className="text-sm">N/A</div>
             return (
                 <div className="text-sm">
-                    {new Date(fecha).toLocaleDateString("es-AR", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                    })}
+                    {moment(fecha).locale('es').format('DD/MM/YYYY')}
                 </div>
             )
         },
@@ -147,11 +145,7 @@ export const columns: ColumnDef<VerificacionCompleta>[] = [
             if (!fecha) return <div className="text-sm">N/A</div>
             return (
                 <div className="text-sm">
-                    {new Date(fecha).toLocaleDateString("es-AR", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                    })}
+                    {moment(fecha).locale('es').format('DD/MM/YYYY')}
                 </div>
             )
         },

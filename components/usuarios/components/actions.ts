@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import moment from "moment";
 
 // Tipos inferidos de las consultas
 type UsuarioRelacion = {
@@ -118,7 +119,7 @@ export async function getUsuarios(): Promise<UsuarioProcesado[]> {
     // Activos primero, luego por fecha de creación
     if (a.is_active && !b.is_active) return -1;
     if (!a.is_active && b.is_active) return 1;
-    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    return moment(b.created_at).valueOf() - moment(a.created_at).valueOf();
   });
 
   return usuariosArray;

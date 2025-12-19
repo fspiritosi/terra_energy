@@ -151,3 +151,9 @@ Nueva tabla para equipos del cliente (equipos a inpeccionar) (los que el cliente
 
 En el tipos de inpecciones al darle click ver el checklist y las inspecciones asignadas a este
 en la seccion deiuliminacion de vrificar intensidad pedir el valor emdido
+
+
+harcodear hora argentina
+Solo mostrar el DOCUMENTO AUTENTICO para los que no estan logueados
+
+npm install moment-timezone --save

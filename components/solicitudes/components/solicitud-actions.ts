@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import moment from "moment";
 import {
   uploadSolicitudImage,
   deleteSolicitudImage,
@@ -356,7 +357,7 @@ export async function aprobarSolicitud(
       .from("solicitudes_inspeccion")
       .update({
         estado: "aprobada",
-        fecha_aprobacion: new Date().toISOString(),
+        fecha_aprobacion: moment().toISOString(),
         comentarios_aprobacion: comentarios,
       })
       .eq("id", solicitudId);
@@ -407,7 +408,7 @@ export async function rechazarSolicitud(
       .from("solicitudes_inspeccion")
       .update({
         estado: "rechazada",
-        fecha_aprobacion: new Date().toISOString(),
+        fecha_aprobacion: moment().toISOString(),
         comentarios_aprobacion: comentarios,
       })
       .eq("id", solicitudId);

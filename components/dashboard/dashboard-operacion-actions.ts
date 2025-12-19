@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import moment from "moment";
 
 export interface DashboardOperacionStats {
   solicitudesPendientes: number;
@@ -111,8 +112,7 @@ export async function getSolicitudesSinAsignar(
     solicitudes?.map((solicitud) => ({
       ...solicitud,
       urgente:
-        new Date().getTime() - new Date(solicitud.fecha_solicitud).getTime() >
-        3 * 24 * 60 * 60 * 1000,
+        moment().diff(moment(solicitud.fecha_solicitud), 'days') > 3,
     })) || [];
 
   return solicitudesConUrgencia;
@@ -149,8 +149,7 @@ export async function getSolicitudesRecientesOperacion(
       ...solicitud,
       urgente:
         solicitud.estado === "pendiente" &&
-        new Date().getTime() - new Date(solicitud.fecha_solicitud).getTime() >
-          3 * 24 * 60 * 60 * 1000,
+        moment().diff(moment(solicitud.fecha_solicitud), 'days') > 3,
     })) || [];
 
   return solicitudesConUrgencia;

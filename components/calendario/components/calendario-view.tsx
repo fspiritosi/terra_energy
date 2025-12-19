@@ -7,6 +7,8 @@ import { ChevronLeft, ChevronRight, Calendar, List } from "lucide-react"
 import { CalendarioGrid } from "./calendario-grid"
 import { getInspeccionesType } from "@/components/inspecciones/components"
 import { CalendarioAgenda } from "./calendario-agenda"
+import moment from "moment"
+import "moment/locale/es"
 
 type VistaCalendario = 'calendario' | 'agenda'
 
@@ -23,18 +25,19 @@ export function CalendarioView({ inspecciones }: CalendarioViewProps) {
     const [fechaActual, setFechaActual] = useState(new Date())
     const [vista, setVista] = useState<VistaCalendario>('calendario')
 
-    const mesActual = fechaActual.getMonth()
-    const añoActual = fechaActual.getFullYear()
+    const fechaMoment = moment(fechaActual)
+    const mesActual = fechaMoment.month()
+    const añoActual = fechaMoment.year()
 
     const cambiarMes = (direccion: 'anterior' | 'siguiente') => {
         setFechaActual(prev => {
-            const nuevaFecha = new Date(prev)
+            const nuevaFecha = moment(prev)
             if (direccion === 'anterior') {
-                nuevaFecha.setMonth(prev.getMonth() - 1)
+                nuevaFecha.subtract(1, 'month')
             } else {
-                nuevaFecha.setMonth(prev.getMonth() + 1)
+                nuevaFecha.add(1, 'month')
             }
-            return nuevaFecha
+            return nuevaFecha.toDate()
         })
     }
 
@@ -44,9 +47,9 @@ export function CalendarioView({ inspecciones }: CalendarioViewProps) {
 
     // Filtrar inspecciones del mes actual
     const inspeccionesDelMes = inspecciones.filter(inspeccion => {
-        const fechaInspeccion = new Date(inspeccion.fecha_programada)
-        return fechaInspeccion.getMonth() === mesActual &&
-            fechaInspeccion.getFullYear() === añoActual
+        const fechaInspeccion = moment(inspeccion.fecha_programada)
+        return fechaInspeccion.month() === mesActual &&
+            fechaInspeccion.year() === añoActual
     })
 
     return (
@@ -99,7 +102,7 @@ export function CalendarioView({ inspecciones }: CalendarioViewProps) {
                                     <ChevronLeft className="h-4 w-4" />
                                 </Button>
                                 <div className="min-w-[140px] text-center font-medium">
-                                    {meses[mesActual]} {añoActual}
+                                    {fechaMoment.locale('es').format('MMMM YYYY')}
                                 </div>
                                 <Button
                                     variant="outline"

@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { FileText } from "lucide-react";
 import Link from "next/link";
 import { getSolicitudesRecientesOperacion } from "./dashboard-operacion-actions";
+import moment from "moment";
+import "moment/locale/es";
 
 export async function ActividadRecienteOperacion() {
     const solicitudes = await getSolicitudesRecientesOperacion(5);
@@ -21,11 +23,7 @@ export async function ActividadRecienteOperacion() {
     };
 
     const formatFecha = (fecha: string) => {
-        return new Date(fecha).toLocaleDateString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
+        return moment(fecha).locale('es').format('DD/MM/YYYY');
     };
 
     return (

@@ -47,3 +47,4 @@ export async function getVerificaciones(): Promise<VerificacionCompleta[]> {
   return (data || []) as VerificacionCompleta[];
 }
 
+

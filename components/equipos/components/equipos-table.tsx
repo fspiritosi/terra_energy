@@ -11,6 +11,8 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { EquipoRowActions } from "./equipo-row-actions"
 import { Equipo } from "./actions"
+import moment from "moment"
+import "moment/locale/es"
 
 interface EquiposTableProps {
     data: Equipo[]
@@ -54,7 +56,7 @@ export function EquiposTable({ data, onEdit, onDelete }: EquiposTableProps) {
                                 </Badge>
                             </TableCell>
                             <TableCell>
-                                {equipo.created_at ? new Date(equipo.created_at).toLocaleDateString() : "-"}
+                                {equipo.created_at ? moment(equipo.created_at).locale('es').format('DD/MM/YYYY') : "-"}
                             </TableCell>
                             <TableCell>
                                 <EquipoRowActions

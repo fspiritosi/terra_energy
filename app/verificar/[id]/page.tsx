@@ -21,6 +21,8 @@ import {
   MinusSquare
 } from "lucide-react";
 import Link from "next/link";
+import moment from "moment";
+import "moment/locale/es";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -36,6 +38,8 @@ export default async function VerificarDocumentoPage({ params }: PageProps) {
     .select("*")
     .eq("id", id)
     .single();
+
+    const { data:{user} } = await supabase.auth.getUser();
 
   if (docError || !documento) {
     notFound();
@@ -366,6 +370,9 @@ export default async function VerificarDocumentoPage({ params }: PageProps) {
 
       <main className="container mx-auto px-4 py-8 max-w-4xl space-y-6">
         {/* Verificación de autenticidad - siempre verde */}
+
+{!user?.id && (
+
         <Card className="border-green-500 border-2">
           <CardHeader className="bg-green-50 rounded-t-lg">
             <div className="flex items-center justify-center gap-3">
@@ -381,6 +388,8 @@ export default async function VerificarDocumentoPage({ params }: PageProps) {
             </div>
           </CardHeader>
         </Card>
+)}
+
 
         {/* Resultado de la inspección - separado */}
         <Card className={`${config.borderColor} border-2`}>
@@ -443,7 +452,7 @@ export default async function VerificarDocumentoPage({ params }: PageProps) {
                     <Calendar className="h-3 w-3 text-primary" /> Fecha Emisión
                   </p>
                   <p className="font-semibold text-foreground">
-                    {new Date(documento.fecha_documento).toLocaleDateString("es-AR")}
+                    {moment(documento.fecha_documento).locale('es').format('DD/MM/YYYY')}
                   </p>
                 </div>
                 {documento.fecha_vencimiento && (
@@ -452,7 +461,7 @@ export default async function VerificarDocumentoPage({ params }: PageProps) {
                       <Calendar className="h-3 w-3 text-primary" /> Vencimiento
                     </p>
                     <p className="font-semibold text-foreground">
-                      {new Date(documento.fecha_vencimiento).toLocaleDateString("es-AR")}
+                      {moment(documento.fecha_vencimiento).locale('es').format('DD/MM/YYYY')}
                     </p>
                   </div>
                 )}
@@ -500,7 +509,7 @@ export default async function VerificarDocumentoPage({ params }: PageProps) {
                       <Calendar className="h-3 w-3 text-primary" /> Fecha de Inspección
                     </p>
                     <p className="font-semibold text-foreground">
-                      {new Date(inspeccion.fecha_completada).toLocaleDateString("es-AR")}
+                      {moment(inspeccion.fecha_completada).locale('es').format('DD/MM/YYYY')}
                     </p>
                   </div>
                 )}
@@ -651,7 +660,7 @@ export default async function VerificarDocumentoPage({ params }: PageProps) {
             realizaron las inspecciones.
           </p>
           <p className="text-primary font-medium">
-            © {new Date().getFullYear()} Terra Energy Services. Todos los derechos reservados.
+            © {moment().year()} Terra Energy Services. Todos los derechos reservados.
           </p>
         </div>
       </main>

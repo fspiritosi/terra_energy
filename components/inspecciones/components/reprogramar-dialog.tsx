@@ -24,6 +24,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Calendar } from "lucide-react"
 import { getInspeccionesType } from "./actions"
+import moment from "moment"
+import "moment/locale/es"
 // import { Inspeccion } from "./actions"
 
 const reprogramarSchema = z.object({
@@ -93,7 +95,7 @@ export function ReprogramarDialog({
                         <p><span className="font-medium">Cliente:</span> {inspeccion.cliente_nombre}</p>
                         <p><span className="font-medium">Lugar:</span> {inspeccion.lugar}</p>
                         <p><span className="font-medium">Equipo:</span> {inspeccion.equipo}</p>
-                        <p><span className="font-medium">Fecha actual:</span> {new Date(inspeccion.fecha_programada).toLocaleDateString()}</p>
+                        <p><span className="font-medium">Fecha actual:</span> {moment(inspeccion.fecha_programada).locale('es').format('DD/MM/YYYY')}</p>
                     </div>
                 </div>
 
@@ -108,7 +110,7 @@ export function ReprogramarDialog({
                                     <FormControl>
                                         <Input
                                             type="date"
-                                            min={new Date().toISOString().split('T')[0]}
+                                            min={moment().format('YYYY-MM-DD')}
                                             {...field}
                                         />
                                     </FormControl>

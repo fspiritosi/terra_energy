@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge"
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { ClienteRowActions } from "./cliente-row-actions"
 import { Cliente } from "./actions"
+import moment from "moment"
+import "moment/locale/es"
 
 export const columns: ColumnDef<Cliente>[] = [
     {
@@ -146,33 +148,33 @@ export const columns: ColumnDef<Cliente>[] = [
             <DataTableColumnHeader column={column} title="Fecha de Creación" />
         ),
         cell: ({ row }) => {
-            const date = new Date(row.getValue("created_at"))
+            const date = row.getValue("created_at") as string
             return (
                 <div className="text-sm text-muted-foreground">
-                    {date.toLocaleDateString("es-AR")}
+                    {moment(date).locale('es').format('DD/MM/YYYY')}
                 </div>
             )
         },
         filterFn: (row, id, value) => {
-            const date = new Date(row.getValue(id))
-            const now = new Date()
+            const date = moment(row.getValue(id) as string)
+            const now = moment()
 
             return value.some((filterValue: string) => {
                 switch (filterValue) {
                     case "today":
-                        return date.toDateString() === now.toDateString()
+                        return date.isSame(now, 'day')
                     case "week":
-                        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-                        return date >= weekAgo
+                        const weekAgo = moment().subtract(7, 'days')
+                        return date.isSameOrAfter(weekAgo)
                     case "month":
-                        const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate())
-                        return date >= monthAgo
+                        const monthAgo = moment().subtract(1, 'month')
+                        return date.isSameOrAfter(monthAgo)
                     case "quarter":
-                        const quarterAgo = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate())
-                        return date >= quarterAgo
+                        const quarterAgo = moment().subtract(3, 'months')
+                        return date.isSameOrAfter(quarterAgo)
                     case "year":
-                        const yearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate())
-                        return date >= yearAgo
+                        const yearAgo = moment().subtract(1, 'year')
+                        return date.isSameOrAfter(yearAgo)
                     default:
                         return true
                 }

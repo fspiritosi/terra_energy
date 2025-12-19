@@ -2,6 +2,8 @@
 
 import { Badge } from "@/components/ui/badge"
 import { getInspeccionesType } from "@/components/inspecciones/components"
+import moment from "moment"
+import "moment/locale/es"
 
 interface CalendarioAgendaProps {
     fecha: Date
@@ -9,8 +11,9 @@ interface CalendarioAgendaProps {
 }
 
 export function CalendarioAgenda({ fecha, inspecciones }: CalendarioAgendaProps) {
-    const año = fecha.getFullYear()
-    const mes = fecha.getMonth()
+    const fechaMoment = moment(fecha)
+    const año = fechaMoment.year()
+    const mes = fechaMoment.month()
 
     // Agrupar inspecciones por fecha
     const inspeccionesPorFecha = inspecciones.reduce((acc, inspeccion) => {
@@ -24,9 +27,9 @@ export function CalendarioAgenda({ fecha, inspecciones }: CalendarioAgendaProps)
 
     // Obtener todas las fechas del mes que tienen inspecciones, ordenadas
     const fechasConInspecciones = Object.keys(inspeccionesPorFecha)
-        .filter(fecha => {
-            const fechaInspeccion = new Date(fecha)
-            return fechaInspeccion.getMonth() === mes && fechaInspeccion.getFullYear() === año
+        .filter(fechaKey => {
+            const fechaInspeccion = moment(fechaKey)
+            return fechaInspeccion.month() === mes && fechaInspeccion.year() === año
         })
         .sort()
 
@@ -41,7 +44,7 @@ export function CalendarioAgenda({ fecha, inspecciones }: CalendarioAgendaProps)
     return (
         <div className="space-y-6">
             {fechasConInspecciones.map(fechaKey => {
-                const fecha = new Date(fechaKey)
+                const fecha = moment(fechaKey)
                 const inspeccionesDelDia = inspeccionesPorFecha[fechaKey]
 
                 return (
@@ -49,11 +52,7 @@ export function CalendarioAgenda({ fecha, inspecciones }: CalendarioAgendaProps)
                         {/* Header del día */}
                         <div className="flex items-center gap-3">
                             <div className="text-lg font-semibold">
-                                {fecha.toLocaleDateString('es-ES', {
-                                    weekday: 'long',
-                                    day: 'numeric',
-                                    month: 'long'
-                                })}
+                                {fecha.locale('es').format('dddd, D [de] MMMM')}
                             </div>
                             <div className="h-px bg-border flex-1"></div>
                             <Badge variant="secondary">

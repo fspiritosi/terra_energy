@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { generateDocumentQR } from "@/lib/pdf/qr-generator";
 import type { InformeData } from "./informe-inspeccion-pdf";
+import moment from "moment";
+import "moment/locale/es";
 
 // Tipo para el documento
 export type DocumentoInspeccion = {
@@ -201,21 +203,17 @@ export async function getDatosParaInforme(inspeccionId: string): Promise<Informe
 
   // Formatear fecha
   const fechaInspeccion = inspeccion.fecha_completada
-    ? new Date(inspeccion.fecha_completada).toLocaleDateString("es-AR")
-    : new Date().toLocaleDateString("es-AR");
+    ? moment(inspeccion.fecha_completada).locale('es').format('DD/MM/YYYY')
+    : moment().locale('es').format('DD/MM/YYYY');
 
   const fechaVencimiento = inspeccion.fecha_completada
-    ? new Date(
-        new Date(inspeccion.fecha_completada).setFullYear(
-          new Date(inspeccion.fecha_completada).getFullYear() + 1
-        )
-      ).toLocaleDateString("es-AR")
+    ? moment(inspeccion.fecha_completada).add(1, 'year').locale('es').format('DD/MM/YYYY')
     : undefined;
 
   return {
     numeroDocumento: "", // Se asignará al crear el documento
     revision: "00",
-    fechaDocumento: new Date().toLocaleDateString("es-AR"),
+    fechaDocumento: moment().locale('es').format('DD/MM/YYYY'),
     fechaVencimiento,
     codigoDocumento: "MKG-R09-00 rev.00",
     clienteNombre: solicitud?.cliente?.nombre || inspeccion.cliente_nombre || "Cliente",

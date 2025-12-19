@@ -28,6 +28,7 @@ import { ItemsManager } from "./items-manager"
 import { TrabajosMultiselect } from "./trabajos-multiselect"
 import { SolicitudImagesUpload, SolicitudImage } from "./solicitud-images-upload"
 import { useUserType } from "@/hooks/use-user-type"
+import moment from "moment"
 import { useUserCliente } from "@/hooks/use-user-cliente"
 import { Solicitud, TipoInspeccion, ClienteOption } from "./actions"
 import { SolicitudItem } from "./solicitud-actions"
@@ -326,7 +327,7 @@ export function SolicitudForm({
                                             <FormControl>
                                                 <Input
                                                     type="date"
-                                                    min={new Date().toISOString().split('T')[0]}
+                                                    min={moment().format('YYYY-MM-DD')}
                                                     {...field}
                                                 />
                                             </FormControl>

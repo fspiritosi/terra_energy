@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { getInspeccionesType } from "./actions"
 import { Database } from "@/database.types"
+import moment from "moment"
+import "moment/locale/es"
 
 interface DocumentoInfo {
     id: string;
@@ -98,14 +100,16 @@ export function InspeccionesTable({ data, documentos, onReprogramar, onEstadoCha
                                 {inspeccion.equipo}
                             </TableCell>
                             <TableCell>
-                                {new Date(inspeccion.fecha_programada).toLocaleDateString()}
+                                {moment(inspeccion.fecha_programada).locale('es').format('DD/MM/YYYY')}
                             </TableCell>
                             <TableCell>
                                 <Badge variant={estadoColors[inspeccion.estado!]}>
                                     {estadoLabels[inspeccion.estado!]}
                                 </Badge>
                             </TableCell>
-                            <TableCell>
+                         {
+                            inspeccion.estado !== 'cancelada' && (
+                                <TableCell>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="ghost" className="h-8 w-8 p-0">
@@ -114,14 +118,27 @@ export function InspeccionesTable({ data, documentos, onReprogramar, onEstadoCha
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={() => onReprogramar(inspeccion)}>
-                                            <Calendar className="mr-2 h-4 w-4" />
-                                            Reprogramar
-                                        </DropdownMenuItem>
-                                        {inspeccion.estado === 'programada' && (
-                                            <DropdownMenuItem onClick={() => onEstadoChange(inspeccion.id, 'en_progreso')}>
+                                        {(inspeccion.estado === 'programada') && (
+                                            <>
+                                                <DropdownMenuItem onClick={() => onReprogramar(inspeccion)}>
+                                                <Calendar className="mr-2 h-4 w-4" />
+                                                Reprogramar
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => {onEstadoChange(inspeccion.id, 'en_progreso')
+router.push(`/dashboard/inspecciones/${inspeccion.id}/completar`)
+
+                                            }}>
                                                 Iniciar Inspección
                                             </DropdownMenuItem>
+                                            </>
+                                        )}
+                                            {inspeccion.estado === 'en_progreso' && (
+                                            <>
+                                                <DropdownMenuItem onClick={() => router.push(`/dashboard/inspecciones/${inspeccion.id}/completar`)}>
+                                                    <ClipboardCheck className="mr-2 h-4 w-4" />
+                                                    Completar Checklist
+                                                </DropdownMenuItem>
+                                            </>
                                         )}
                                         {(inspeccion.estado === 'programada' || inspeccion.estado === 'en_progreso') && (
                                             <DropdownMenuItem
@@ -147,6 +164,8 @@ export function InspeccionesTable({ data, documentos, onReprogramar, onEstadoCha
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </TableCell>
+                            )
+                         }
                         </TableRow>
                     ))}
                 </TableBody>

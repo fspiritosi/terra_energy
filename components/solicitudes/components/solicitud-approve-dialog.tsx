@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { CheckCircle } from "lucide-react"
 import { Solicitud } from "./actions"
+import moment from "moment"
 
 const approveSchema = z.object({
     fechaProgramada: z.string().min(1, "La fecha programada es requerida"),
@@ -113,7 +114,7 @@ export function SolicitudApproveDialog({
                                     <FormControl>
                                         <Input
                                             type="date"
-                                            min={new Date().toISOString().split('T')[0]}
+                                            min={moment().format('YYYY-MM-DD')}
                                             {...field}
                                         />
                                     </FormControl>

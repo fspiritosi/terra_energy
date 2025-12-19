@@ -7,6 +7,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { Usuario } from "./actions"
 import { UsuarioRowActions } from "./usuario-row-actions"
+import moment from "moment"
+import "moment/locale/es"
 
 export const columns: ColumnDef<Usuario>[] = [
     {
@@ -128,14 +130,10 @@ export const columns: ColumnDef<Usuario>[] = [
             <DataTableColumnHeader column={column} title="Fecha de Creación" />
         ),
         cell: ({ row }) => {
-            const date = new Date(row.getValue("created_at"))
+            const date = row.getValue("created_at") as string
             return (
                 <div className="text-sm">
-                    {date.toLocaleDateString("es-AR", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                    })}
+                    {moment(date).locale('es').format('DD/MM/YYYY')}
                 </div>
             )
         },

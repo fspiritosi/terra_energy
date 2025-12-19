@@ -2,6 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { getSolicitudesRecientes } from "./dashboard-actions";
 import { Badge } from "@/components/ui/badge";
 import { FileText } from "lucide-react";
+import moment from "moment";
+import "moment/locale/es";
 
 export async function SolicitudesRecientes() {
     const solicitudes = await getSolicitudesRecientes(5);
@@ -19,11 +21,7 @@ export async function SolicitudesRecientes() {
     };
 
     const formatFecha = (fecha: string) => {
-        return new Date(fecha).toLocaleDateString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
+        return moment(fecha).locale('es').format('DD/MM/YYYY');
     };
 
     return (

@@ -4,6 +4,8 @@
 import { getInspeccionesType } from "@/components/inspecciones/components"
 // import { Inspeccion } from "@/components/inspecciones/components/actions"
 import { cn } from "@/lib/utils"
+import moment from "moment"
+import "moment/locale/es"
 
 interface CalendarioGridProps {
     fecha: Date
@@ -15,49 +17,53 @@ const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 
 
 export function CalendarioGrid({ fecha, inspecciones }: CalendarioGridProps) {
-    const año = fecha.getFullYear()
-    const mes = fecha.getMonth()
+    const fechaMoment = moment(fecha)
+    const año = fechaMoment.year()
+    const mes = fechaMoment.month()
 
     // Primer día del mes
-    const primerDia = new Date(año, mes, 1)
+    const primerDia = moment(fecha).startOf('month')
     // Último día del mes
-    const ultimoDia = new Date(año, mes + 1, 0)
+    const ultimoDia = moment(fecha).endOf('month')
 
     // Día de la semana del primer día (0 = domingo)
-    const primerDiaSemana = primerDia.getDay()
+    const primerDiaSemana = primerDia.day()
 
     // Total de días en el mes
-    const diasEnMes = ultimoDia.getDate()
+    const diasEnMes = ultimoDia.date()
 
     // Crear array de días para mostrar
     const dias = []
 
     // Días del mes anterior (para completar la primera semana)
-    const mesAnterior = new Date(año, mes - 1, 0)
+    const mesAnterior = moment(fecha).subtract(1, 'month').endOf('month')
     for (let i = primerDiaSemana - 1; i >= 0; i--) {
+        const fechaDia = moment(mesAnterior).subtract(i, 'days')
         dias.push({
-            dia: mesAnterior.getDate() - i,
+            dia: fechaDia.date(),
             esDelMesActual: false,
-            fecha: new Date(año, mes - 1, mesAnterior.getDate() - i)
+            fecha: fechaDia.toDate()
         })
     }
 
     // Días del mes actual
     for (let dia = 1; dia <= diasEnMes; dia++) {
+        const fechaDia = moment(fecha).date(dia)
         dias.push({
             dia,
             esDelMesActual: true,
-            fecha: new Date(año, mes, dia)
+            fecha: fechaDia.toDate()
         })
     }
 
     // Días del mes siguiente (para completar la última semana)
     const diasRestantes = 42 - dias.length // 6 semanas * 7 días
     for (let dia = 1; dia <= diasRestantes; dia++) {
+        const fechaDia = moment(fecha).add(1, 'month').date(dia)
         dias.push({
             dia,
             esDelMesActual: false,
-            fecha: new Date(año, mes + 1, dia)
+            fecha: fechaDia.toDate()
         })
     }
 
@@ -71,9 +77,9 @@ export function CalendarioGrid({ fecha, inspecciones }: CalendarioGridProps) {
         return acc
     }, {} as Record<string, getInspeccionesType>)
 
-    const hoy = new Date()
+    const hoy = moment()
     const esHoy = (fecha: Date) => {
-        return fecha.toDateString() === hoy.toDateString()
+        return moment(fecha).isSame(hoy, 'day')
     }
 
     return (
@@ -90,7 +96,7 @@ export function CalendarioGrid({ fecha, inspecciones }: CalendarioGridProps) {
             {/* Grid de días */}
             <div className="grid grid-cols-7 gap-px bg-border rounded-b-lg overflow-hidden">
                 {dias.map((diaInfo, index) => {
-                    const fechaKey = diaInfo.fecha.toISOString().split('T')[0]
+                    const fechaKey = moment(diaInfo.fecha).format('YYYY-MM-DD')
                     const inspeccionesDelDia = inspeccionesPorFecha[fechaKey] || []
 
                     return (

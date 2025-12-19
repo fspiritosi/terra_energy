@@ -3,6 +3,8 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import { createClient } from "@/lib/supabase/server";
 import { InformeInspeccionPDF, type InformeData } from "@/components/inspecciones/pdf/informe-inspeccion-pdf";
 import { generateDocumentQR } from "@/lib/pdf/qr-generator";
+import moment from "moment";
+import "moment/locale/es";
 
 export async function GET(
   request: NextRequest,
@@ -171,21 +173,17 @@ export async function GET(
     const imagenes = solicitud?.imagenes?.map((img: any) => img.imagen_url) || [];
 
     const fechaInspeccion = inspeccion.fecha_completada
-      ? new Date(inspeccion.fecha_completada).toLocaleDateString("es-AR")
-      : new Date().toLocaleDateString("es-AR");
+      ? moment(inspeccion.fecha_completada).locale('es').format('DD/MM/YYYY')
+      : moment().locale('es').format('DD/MM/YYYY');
 
     const fechaVencimiento = inspeccion.fecha_completada
-      ? new Date(
-          new Date(inspeccion.fecha_completada).setFullYear(
-            new Date(inspeccion.fecha_completada).getFullYear() + 1
-          )
-        ).toLocaleDateString("es-AR")
+      ? moment(inspeccion.fecha_completada).add(1, 'year').locale('es').format('DD/MM/YYYY')
       : undefined;
 
     const informeData: InformeData = {
       numeroDocumento: documento.numero_documento,
       revision: documento.revision || "00",
-      fechaDocumento: new Date(documento.fecha_documento).toLocaleDateString("es-AR"),
+      fechaDocumento: moment(documento.fecha_documento).locale('es').format('DD/MM/YYYY'),
       fechaVencimiento,
       codigoDocumento: "MKG-R09-00 rev.00",
       clienteNombre: solicitud?.cliente?.nombre || inspeccion.cliente_nombre || "Cliente",

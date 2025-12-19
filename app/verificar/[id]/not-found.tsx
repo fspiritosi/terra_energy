@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { XCircle, Home } from "lucide-react";
+import moment from "moment";
 
 export default function DocumentoNoEncontrado() {
   return (
@@ -65,7 +66,7 @@ export default function DocumentoNoEncontrado() {
         {/* Disclaimer */}
         <div className="text-center text-xs text-muted-foreground mt-8">
           <p className="text-primary font-medium">
-            © {new Date().getFullYear()} Terra Energy Services. Todos los derechos reservados.
+            © {moment().year()} Terra Energy Services. Todos los derechos reservados.
           </p>
         </div>
       </main>

@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge"
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { Solicitud } from "./actions"
 import { SolicitudRowActions } from "./solicitud-row-actions"
+import moment from "moment"
+import "moment/locale/es"
 
 const getEstadoBadge = (estado: string) => {
     switch (estado) {
@@ -86,14 +88,10 @@ export const columns: ColumnDef<Solicitud>[] = [
             <DataTableColumnHeader column={column} title="Fecha Entrega" />
         ),
         cell: ({ row }) => {
-            const fecha = new Date(row.getValue("fecha_entrega_deseada"))
+            const fecha = row.getValue("fecha_entrega_deseada") as string
             return (
                 <div className="text-sm">
-                    {fecha.toLocaleDateString("es-AR", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                    })}
+                    {moment(fecha).locale('es').format('DD/MM/YYYY')}
                 </div>
             )
         },
@@ -118,14 +116,10 @@ export const columns: ColumnDef<Solicitud>[] = [
             <DataTableColumnHeader column={column} title="Fecha Solicitud" />
         ),
         cell: ({ row }) => {
-            const fecha = new Date(row.getValue("fecha_solicitud"))
+            const fecha = row.getValue("fecha_solicitud") as string
             return (
                 <div className="text-sm">
-                    {fecha.toLocaleDateString("es-AR", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                    })}
+                    {moment(fecha).locale('es').format('DD/MM/YYYY')}
                 </div>
             )
         },

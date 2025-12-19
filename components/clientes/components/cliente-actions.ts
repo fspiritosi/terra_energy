@@ -3,6 +3,7 @@
 import { Database } from "@/database.types";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import moment from "moment";
 
 export type CreateClienteData =
   Database["public"]["Tables"]["clientes"]["Insert"];
@@ -52,7 +53,7 @@ export async function updateCliente(data: UpdateClienteData) {
         direccion: data.direccion || null,
         moneda: data.moneda,
         is_active: data.is_active,
-        updated_at: new Date().toISOString(),
+        updated_at: moment().toISOString(),
       })
       .eq("id", data.id);
 

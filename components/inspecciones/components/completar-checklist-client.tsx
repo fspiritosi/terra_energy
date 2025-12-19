@@ -18,6 +18,8 @@ import {
 import { ChecklistForm } from "./checklist-form";
 import { updateInspeccion } from "./actions";
 import { crearDocumentoInspeccion } from "../pdf/documento-actions";
+import moment from "moment";
+import "moment/locale/es";
 
 interface CompletarChecklistClientProps {
   inspeccionId: string;
@@ -280,7 +282,7 @@ export function CompletarChecklistClient({
             <div>
               <p className="text-sm text-muted-foreground">Fecha Programada</p>
               <p className="font-medium">
-                {new Date(inspeccion.fecha_programada).toLocaleDateString()}
+                {moment(inspeccion.fecha_programada).locale('es').format('DD/MM/YYYY')}
               </p>
             </div>
           </div>

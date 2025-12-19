@@ -3,6 +3,7 @@
 import { Database } from "@/database.types";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import moment from "moment";
 
 export async function getInspecciones() {
   const supabase = await createClient();
@@ -38,7 +39,7 @@ export async function updateInspeccion(
 
     // Si se marca como completada, agregar fecha de completado
     if (inspeccionData.estado === "completada") {
-      updateData.fecha_completada = new Date().toISOString().split("T")[0];
+      updateData.fecha_completada = moment().format('YYYY-MM-DD');
     }
   }
 
