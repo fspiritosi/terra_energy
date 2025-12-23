@@ -16,7 +16,12 @@ export interface SolicitudItem {
 }
 
 export interface SolicitudImageData {
-  file?: File; // Para imágenes nuevas
+  file?: File; // Para imágenes nuevas (no se serializa)
+  fileData?: {
+    base64: string; // Archivo convertido a base64 para serialización
+    type: string;
+    name: string;
+  };
   url?: string; // Para imágenes existentes
   fileName: string;
   orden: number;
@@ -64,23 +69,60 @@ async function handleSolicitudImages(
   }
 
   // Procesar imágenes nuevas
-  const newImages = images.filter((img) => img.file && !img.toDelete);
+  const newImages = images.filter((img) => (img.file || img.fileData) && !img.toDelete);
+  console.log(`[handleSolicitudImages] Procesando ${newImages.length} imágenes nuevas para solicitud ${solicitudId}`);
+  
   for (const imageData of newImages) {
+    let file: File | null = null;
+
+    // Si tenemos un File directo (solo debería pasar en desarrollo/testing)
     if (imageData.file) {
+      file = imageData.file;
+      console.log(`[handleSolicitudImages] Imagen con File directo: ${imageData.fileName}`);
+    }
+    // Si tenemos fileData serializado (base64), reconstruir el File
+    else if (imageData.fileData) {
+      try {
+        // Convertir base64 a ArrayBuffer
+        const binaryString = atob(imageData.fileData.base64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        file = new File([bytes.buffer], imageData.fileData.name, { type: imageData.fileData.type });
+        console.log(`[handleSolicitudImages] Imagen reconstruida desde base64: ${imageData.fileData.name} (${bytes.length} bytes)`);
+      } catch (error) {
+        console.error(`[handleSolicitudImages] Error reconstruyendo imagen ${imageData.fileName}:`, error);
+        continue;
+      }
+    }
+
+    if (file) {
       const uploadResult = await uploadSolicitudImage(
         solicitudId,
-        imageData.file,
-        imageData.orden
+        file,
+        imageData.orden,
+        supabase // Pasar el cliente del servidor
       );
 
       if (uploadResult) {
-        await supabase.from("solicitud_imagenes").insert({
+        const { error: insertError } = await supabase.from("solicitud_imagenes").insert({
           solicitud_id: solicitudId,
           imagen_url: uploadResult.url,
           nombre_archivo: uploadResult.fileName,
           orden: imageData.orden,
         });
+
+        if (insertError) {
+          console.error(`[handleSolicitudImages] Error insertando imagen en BD:`, insertError);
+        } else {
+          console.log(`[handleSolicitudImages] Imagen insertada correctamente: ${uploadResult.fileName}`);
+        }
+      } else {
+        console.error(`[handleSolicitudImages] Error al subir imagen: uploadResult es null`);
       }
+    } else {
+      console.error(`[handleSolicitudImages] No se pudo crear File para imagen: ${imageData.fileName}`);
     }
   }
 }

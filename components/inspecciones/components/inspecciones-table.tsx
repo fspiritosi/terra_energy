@@ -21,8 +21,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { getInspeccionesType } from "./actions"
 import { Database } from "@/database.types"
-import moment from "moment"
+import moment from "moment-timezone"
 import "moment/locale/es"
+import { parseDateArgentina } from "@/lib/utils"
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires'
 
 interface DocumentoInfo {
     id: string;
@@ -100,7 +103,7 @@ export function InspeccionesTable({ data, documentos, onReprogramar, onEstadoCha
                                 {inspeccion.equipo}
                             </TableCell>
                             <TableCell>
-                                {moment(inspeccion.fecha_programada).locale('es').format('DD/MM/YYYY')}
+                                {parseDateArgentina(inspeccion.fecha_programada).locale('es').format('DD/MM/YYYY')}
                             </TableCell>
                             <TableCell>
                                 <Badge variant={estadoColors[inspeccion.estado!]}>

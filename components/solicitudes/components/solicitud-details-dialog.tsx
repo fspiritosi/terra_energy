@@ -21,8 +21,10 @@ import { SolicitudImagesViewer, SolicitudImageView } from "./solicitud-images-vi
 import { aprobarSolicitud, rechazarSolicitud } from "./solicitud-actions"
 import { useUserType } from "@/hooks/use-user-type"
 import { toast } from "sonner"
-import moment from "moment"
+import moment from "moment-timezone"
 import "moment/locale/es"
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires'
 
 interface SolicitudDetailsDialogProps {
     open: boolean
@@ -104,13 +106,16 @@ export function SolicitudDetailsDialog({
     }
 
     const formatDate = (dateString: string) => {
-        moment.locale('es')
-        return moment(dateString).format("DD [de] MMMM [de] YYYY")
+        // Parsear fecha DATE (YYYY-MM-DD) como fecha local en Argentina
+        // Si la fecha tiene formato DATE (sin hora), agregar hora 00:00:00
+        const fechaConHora = dateString.includes('T') || dateString.includes(' ') ? dateString : dateString + ' 00:00:00'
+        const formato = dateString.includes('T') || dateString.includes(' ') ? undefined : 'YYYY-MM-DD HH:mm:ss'
+        return moment.tz(fechaConHora, formato as any, TIMEZONE_ARGENTINA).locale('es').format("DD [de] MMMM [de] YYYY")
     }
 
     const formatDateTime = (dateString: string) => {
-        moment.locale('es')
-        return moment(dateString).format("DD/MM/YYYY [a las] HH:mm")
+        // TIMESTAMP ya viene con hora, usar parseo directo
+        return moment.tz(dateString, TIMEZONE_ARGENTINA).locale('es').format("DD/MM/YYYY [a las] HH:mm")
     }
 
     return (

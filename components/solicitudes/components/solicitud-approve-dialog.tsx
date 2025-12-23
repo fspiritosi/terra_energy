@@ -25,7 +25,9 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { CheckCircle } from "lucide-react"
 import { Solicitud } from "./actions"
-import moment from "moment"
+import moment from "moment-timezone"
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires'
 
 const approveSchema = z.object({
     fechaProgramada: z.string().min(1, "La fecha programada es requerida"),
@@ -114,7 +116,7 @@ export function SolicitudApproveDialog({
                                     <FormControl>
                                         <Input
                                             type="date"
-                                            min={moment().format('YYYY-MM-DD')}
+                                            min={moment.tz(TIMEZONE_ARGENTINA).format('YYYY-MM-DD')}
                                             {...field}
                                         />
                                     </FormControl>

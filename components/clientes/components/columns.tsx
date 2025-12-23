@@ -6,8 +6,10 @@ import { Badge } from "@/components/ui/badge"
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { ClienteRowActions } from "./cliente-row-actions"
 import { Cliente } from "./actions"
-import moment from "moment"
+import moment from "moment-timezone"
 import "moment/locale/es"
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires'
 
 export const columns: ColumnDef<Cliente>[] = [
     {
@@ -149,31 +151,32 @@ export const columns: ColumnDef<Cliente>[] = [
         ),
         cell: ({ row }) => {
             const date = row.getValue("created_at") as string
+            // created_at es TIMESTAMP, usar parseo directo con timezone
             return (
                 <div className="text-sm text-muted-foreground">
-                    {moment(date).locale('es').format('DD/MM/YYYY')}
+                    {moment.tz(date, TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY')}
                 </div>
             )
         },
         filterFn: (row, id, value) => {
-            const date = moment(row.getValue(id) as string)
-            const now = moment()
+            const date = moment.tz(row.getValue(id) as string, TIMEZONE_ARGENTINA)
+            const now = moment.tz(TIMEZONE_ARGENTINA)
 
             return value.some((filterValue: string) => {
                 switch (filterValue) {
                     case "today":
                         return date.isSame(now, 'day')
                     case "week":
-                        const weekAgo = moment().subtract(7, 'days')
+                        const weekAgo = moment.tz(TIMEZONE_ARGENTINA).subtract(7, 'days')
                         return date.isSameOrAfter(weekAgo)
                     case "month":
-                        const monthAgo = moment().subtract(1, 'month')
+                        const monthAgo = moment.tz(TIMEZONE_ARGENTINA).subtract(1, 'month')
                         return date.isSameOrAfter(monthAgo)
                     case "quarter":
-                        const quarterAgo = moment().subtract(3, 'months')
+                        const quarterAgo = moment.tz(TIMEZONE_ARGENTINA).subtract(3, 'months')
                         return date.isSameOrAfter(quarterAgo)
                     case "year":
-                        const yearAgo = moment().subtract(1, 'year')
+                        const yearAgo = moment.tz(TIMEZONE_ARGENTINA).subtract(1, 'year')
                         return date.isSameOrAfter(yearAgo)
                     default:
                         return true

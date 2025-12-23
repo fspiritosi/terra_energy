@@ -2,8 +2,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { getSolicitudesRecientes } from "./dashboard-actions";
 import { Badge } from "@/components/ui/badge";
 import { FileText } from "lucide-react";
-import moment from "moment";
+import moment from "moment-timezone";
 import "moment/locale/es";
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires';
 
 export async function SolicitudesRecientes() {
     const solicitudes = await getSolicitudesRecientes(5);
@@ -21,7 +23,8 @@ export async function SolicitudesRecientes() {
     };
 
     const formatFecha = (fecha: string) => {
-        return moment(fecha).locale('es').format('DD/MM/YYYY');
+        // Parsear fecha DATE (YYYY-MM-DD) como fecha local en Argentina
+        return moment.tz(fecha + ' 00:00:00', 'YYYY-MM-DD HH:mm:ss', TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY');
     };
 
     return (

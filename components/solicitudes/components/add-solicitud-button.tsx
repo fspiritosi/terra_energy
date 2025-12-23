@@ -15,11 +15,17 @@ export function AddSolicitudButton() {
     const [clientes, setClientes] = React.useState<Awaited<ReturnType<typeof getClientesActivos>>>([])
     const [trabajos, setTrabajos] = React.useState<Awaited<ReturnType<typeof getTiposInspeccion>>>([])
     const [equipos, setEquipos] = React.useState<Awaited<ReturnType<typeof getEquiposActivos>>>([])
+    const [isLoadingClientes, setIsLoadingClientes] = React.useState(false)
+    const [isLoadingTrabajos, setIsLoadingTrabajos] = React.useState(false)
+    const [isLoadingEquipos, setIsLoadingEquipos] = React.useState(false)
 
     // Cargar datos necesarios cuando se abre el modal
     React.useEffect(() => {
         if (open) {
             const loadData = async () => {
+                setIsLoadingClientes(true)
+                setIsLoadingTrabajos(true)
+                setIsLoadingEquipos(true)
                 try {
                     const [clientesData, trabajosData, equiposData] = await Promise.all([
                         getClientesActivos(),
@@ -32,9 +38,21 @@ export function AddSolicitudButton() {
                 } catch (error) {
                     console.error("Error loading data:", error)
                     toast.error("Error al cargar los datos")
+                } finally {
+                    setIsLoadingClientes(false)
+                    setIsLoadingTrabajos(false)
+                    setIsLoadingEquipos(false)
                 }
             }
             loadData()
+        } else {
+            // Resetear estados cuando se cierra el modal
+            setClientes([])
+            setTrabajos([])
+            setEquipos([])
+            setIsLoadingClientes(false)
+            setIsLoadingTrabajos(false)
+            setIsLoadingEquipos(false)
         }
     }, [open])
 
@@ -65,6 +83,9 @@ export function AddSolicitudButton() {
                 clientes={clientes}
                 trabajos={trabajos}
                 equipos={equipos}
+                isLoadingClientes={isLoadingClientes}
+                isLoadingTrabajos={isLoadingTrabajos}
+                isLoadingEquipos={isLoadingEquipos}
                 onSubmit={handleSubmit}
                 isLoading={isLoading}
             />

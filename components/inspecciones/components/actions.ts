@@ -3,7 +3,9 @@
 import { Database } from "@/database.types";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import moment from "moment";
+import moment from "moment-timezone";
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires';
 
 export async function getInspecciones() {
   const supabase = await createClient();
@@ -39,7 +41,7 @@ export async function updateInspeccion(
 
     // Si se marca como completada, agregar fecha de completado
     if (inspeccionData.estado === "completada") {
-      updateData.fecha_completada = moment().format('YYYY-MM-DD');
+      updateData.fecha_completada = moment.tz(TIMEZONE_ARGENTINA).format('YYYY-MM-DD');
     }
   }
 

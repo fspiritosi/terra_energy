@@ -28,7 +28,9 @@ import { ItemsManager } from "./items-manager"
 import { TrabajosMultiselect } from "./trabajos-multiselect"
 import { SolicitudImagesUpload, SolicitudImage } from "./solicitud-images-upload"
 import { useUserType } from "@/hooks/use-user-type"
-import moment from "moment"
+import moment from "moment-timezone"
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires'
 import { useUserCliente } from "@/hooks/use-user-cliente"
 import { Solicitud, TipoInspeccion, ClienteOption } from "./actions"
 import { SolicitudItem } from "./solicitud-actions"
@@ -59,6 +61,9 @@ interface SolicitudFormProps {
     clientes: ClienteOption[]
     trabajos: TipoInspeccion[]
     equipos: Equipo[]
+    isLoadingClientes?: boolean
+    isLoadingTrabajos?: boolean
+    isLoadingEquipos?: boolean
     onSubmit: (data: SolicitudFormData) => Promise<void>
     isLoading?: boolean
 }
@@ -70,6 +75,9 @@ export function SolicitudForm({
     clientes,
     trabajos,
     equipos,
+    isLoadingClientes = false,
+    isLoadingTrabajos = false,
+    isLoadingEquipos = false,
     onSubmit,
     isLoading = false,
 }: SolicitudFormProps) {
@@ -185,20 +193,122 @@ export function SolicitudForm({
 
     // Sincronizar imágenes con el formulario
     React.useEffect(() => {
-        const imageData = images.map(img => ({
-            file: img.file,
-            url: img.url,
-            fileName: img.fileName,
-            orden: img.orden,
-            id: img.id,
-            toDelete: img.toDelete,
-        }))
-        form.setValue("images", imageData)
+        const processImages = async () => {
+            const imageData = await Promise.all(
+                images.map(async (img) => {
+                    // Si la imagen tiene un archivo nuevo, convertir a formato serializable (base64)
+                    if (img.file && img.isNew) {
+                        try {
+                            const arrayBuffer = await img.file.arrayBuffer();
+                            const uint8Array = new Uint8Array(arrayBuffer);
+                            
+                            // Convertir ArrayBuffer a base64 de forma segura
+                            let binary = '';
+                            for (let i = 0; i < uint8Array.length; i++) {
+                                binary += String.fromCharCode(uint8Array[i]);
+                            }
+                            const base64 = btoa(binary);
+                            
+                            return {
+                                fileData: {
+                                    base64,
+                                    type: img.file.type,
+                                    name: img.file.name,
+                                },
+                                url: img.url,
+                                fileName: img.fileName,
+                                orden: img.orden,
+                                id: img.id,
+                                toDelete: img.toDelete,
+                            };
+                        } catch (error) {
+                            console.error("Error convirtiendo imagen a base64:", error);
+                            // Si hay error, retornar solo metadatos sin fileData
+                            return {
+                                url: img.url,
+                                fileName: img.fileName,
+                                orden: img.orden,
+                                id: img.id,
+                                toDelete: img.toDelete,
+                            };
+                        }
+                    }
+                    // Para imágenes existentes, solo pasar los metadatos
+                    return {
+                        url: img.url,
+                        fileName: img.fileName,
+                        orden: img.orden,
+                        id: img.id,
+                        toDelete: img.toDelete,
+                    };
+                })
+            );
+            form.setValue("images", imageData);
+        };
+
+        processImages();
     }, [images, form])
 
     const handleSubmit = async (data: SolicitudFormData) => {
         try {
-            await onSubmit(data)
+            // Procesar imágenes justo antes de enviar para asegurar que estén en el formato correcto
+            const processedImages = await Promise.all(
+                images.map(async (img) => {
+                    // Si la imagen tiene un archivo nuevo, convertir a formato serializable (base64)
+                    if (img.file && img.isNew) {
+                        try {
+                            const arrayBuffer = await img.file.arrayBuffer();
+                            const uint8Array = new Uint8Array(arrayBuffer);
+                            
+                            // Convertir ArrayBuffer a base64 de forma segura
+                            let binary = '';
+                            for (let i = 0; i < uint8Array.length; i++) {
+                                binary += String.fromCharCode(uint8Array[i]);
+                            }
+                            const base64 = btoa(binary);
+                            
+                            return {
+                                fileData: {
+                                    base64,
+                                    type: img.file.type,
+                                    name: img.file.name,
+                                },
+                                url: img.url,
+                                fileName: img.fileName,
+                                orden: img.orden,
+                                id: img.id,
+                                toDelete: img.toDelete,
+                            };
+                        } catch (error) {
+                            console.error("Error convirtiendo imagen a base64:", error);
+                            // Si hay error, retornar solo metadatos sin fileData
+                            return {
+                                url: img.url,
+                                fileName: img.fileName,
+                                orden: img.orden,
+                                id: img.id,
+                                toDelete: img.toDelete,
+                            };
+                        }
+                    }
+                    // Para imágenes existentes, solo pasar los metadatos
+                    return {
+                        url: img.url,
+                        fileName: img.fileName,
+                        orden: img.orden,
+                        id: img.id,
+                        toDelete: img.toDelete,
+                    };
+                })
+            );
+
+            // Combinar los datos del formulario con las imágenes procesadas
+            const dataWithImages = {
+                ...data,
+                images: processedImages,
+            };
+
+            await onSubmit(dataWithImages)
             onOpenChange(false)
         } catch (error) {
             console.error("Error al guardar solicitud:", error)
@@ -235,9 +345,12 @@ export function SolicitudForm({
                                             <FormControl>
                                                 <select
                                                     {...field}
+                                                    disabled={isLoadingClientes}
                                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                                 >
-                                                    <option value="">Seleccionar cliente...</option>
+                                                    <option value="">
+                                                        {isLoadingClientes ? "Cargando clientes..." : "Seleccionar cliente..."}
+                                                    </option>
                                                     {clientes.map(cliente => (
                                                         <option key={cliente.id} value={cliente.id}>
                                                             {cliente.nombre}
@@ -303,9 +416,12 @@ export function SolicitudForm({
                                             <FormControl>
                                                 <select
                                                     {...field}
+                                                    disabled={isLoadingEquipos}
                                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                                 >
-                                                    <option value="">Seleccionar equipo...</option>
+                                                    <option value="">
+                                                        {isLoadingEquipos ? "Cargando equipos..." : "Seleccionar equipo..."}
+                                                    </option>
                                                     {equipos.filter(equipo => equipo.is_active).map(equipo => (
                                                         <option key={equipo.id} value={equipo.name}>
                                                             {equipo.name}
@@ -327,7 +443,7 @@ export function SolicitudForm({
                                             <FormControl>
                                                 <Input
                                                     type="date"
-                                                    min={moment().format('YYYY-MM-DD')}
+                                                    min={moment.tz(TIMEZONE_ARGENTINA).format('YYYY-MM-DD')}
                                                     {...field}
                                                 />
                                             </FormControl>
@@ -349,7 +465,8 @@ export function SolicitudForm({
                                                 trabajos={trabajos}
                                                 selectedIds={field.value}
                                                 onSelectionChange={field.onChange}
-                                                placeholder="Seleccionar tipos de inspección..."
+                                                placeholder={isLoadingTrabajos ? "Cargando trabajos..." : "Seleccionar tipos de inspección..."}
+                                                isLoading={isLoadingTrabajos}
                                             />
                                         </FormControl>
                                         <FormMessage />

@@ -180,6 +180,7 @@ export function ItemsManager({ items, onItemsChange }: ItemsManagerProps) {
                                             inspectionTypes={inspectionTypes}
                                             selectedInspections={item.inspections || []}
                                             onSelectionChange={(inspections) => updateItemInspections(index, inspections)}
+                                            disabled={loading}
                                         />
                                     </div>
                                 </AccordionContent>

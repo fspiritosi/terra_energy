@@ -18,8 +18,10 @@ import {
 import { ChecklistForm } from "./checklist-form";
 import { updateInspeccion } from "./actions";
 import { crearDocumentoInspeccion } from "../pdf/documento-actions";
-import moment from "moment";
+import moment from "moment-timezone";
 import "moment/locale/es";
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires';
 
 interface CompletarChecklistClientProps {
   inspeccionId: string;
@@ -282,7 +284,8 @@ export function CompletarChecklistClient({
             <div>
               <p className="text-sm text-muted-foreground">Fecha Programada</p>
               <p className="font-medium">
-                {moment(inspeccion.fecha_programada).locale('es').format('DD/MM/YYYY')}
+                {/* Parsear fecha DATE (YYYY-MM-DD) como fecha local en Argentina */}
+                {moment.tz(inspeccion.fecha_programada + ' 00:00:00', 'YYYY-MM-DD HH:mm:ss', TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY')}
               </p>
             </div>
           </div>

@@ -4,8 +4,10 @@
 import { getInspeccionesType } from "@/components/inspecciones/components"
 // import { Inspeccion } from "@/components/inspecciones/components/actions"
 import { cn } from "@/lib/utils"
-import moment from "moment"
+import moment from "moment-timezone"
 import "moment/locale/es"
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires'
 
 interface CalendarioGridProps {
     fecha: Date
@@ -17,14 +19,14 @@ const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 
 
 export function CalendarioGrid({ fecha, inspecciones }: CalendarioGridProps) {
-    const fechaMoment = moment(fecha)
+    const fechaMoment = moment.tz(fecha, TIMEZONE_ARGENTINA)
     const año = fechaMoment.year()
     const mes = fechaMoment.month()
 
     // Primer día del mes
-    const primerDia = moment(fecha).startOf('month')
+    const primerDia = moment.tz(fecha, TIMEZONE_ARGENTINA).startOf('month')
     // Último día del mes
-    const ultimoDia = moment(fecha).endOf('month')
+    const ultimoDia = moment.tz(fecha, TIMEZONE_ARGENTINA).endOf('month')
 
     // Día de la semana del primer día (0 = domingo)
     const primerDiaSemana = primerDia.day()
@@ -36,9 +38,9 @@ export function CalendarioGrid({ fecha, inspecciones }: CalendarioGridProps) {
     const dias = []
 
     // Días del mes anterior (para completar la primera semana)
-    const mesAnterior = moment(fecha).subtract(1, 'month').endOf('month')
+    const mesAnterior = moment.tz(fecha, TIMEZONE_ARGENTINA).subtract(1, 'month').endOf('month')
     for (let i = primerDiaSemana - 1; i >= 0; i--) {
-        const fechaDia = moment(mesAnterior).subtract(i, 'days')
+        const fechaDia = moment.tz(mesAnterior, TIMEZONE_ARGENTINA).subtract(i, 'days')
         dias.push({
             dia: fechaDia.date(),
             esDelMesActual: false,
@@ -48,7 +50,7 @@ export function CalendarioGrid({ fecha, inspecciones }: CalendarioGridProps) {
 
     // Días del mes actual
     for (let dia = 1; dia <= diasEnMes; dia++) {
-        const fechaDia = moment(fecha).date(dia)
+        const fechaDia = moment.tz(fecha, TIMEZONE_ARGENTINA).date(dia)
         dias.push({
             dia,
             esDelMesActual: true,
@@ -59,7 +61,7 @@ export function CalendarioGrid({ fecha, inspecciones }: CalendarioGridProps) {
     // Días del mes siguiente (para completar la última semana)
     const diasRestantes = 42 - dias.length // 6 semanas * 7 días
     for (let dia = 1; dia <= diasRestantes; dia++) {
-        const fechaDia = moment(fecha).add(1, 'month').date(dia)
+        const fechaDia = moment.tz(fecha, TIMEZONE_ARGENTINA).add(1, 'month').date(dia)
         dias.push({
             dia,
             esDelMesActual: false,
@@ -77,9 +79,9 @@ export function CalendarioGrid({ fecha, inspecciones }: CalendarioGridProps) {
         return acc
     }, {} as Record<string, getInspeccionesType>)
 
-    const hoy = moment()
+    const hoy = moment.tz(TIMEZONE_ARGENTINA)
     const esHoy = (fecha: Date) => {
-        return moment(fecha).isSame(hoy, 'day')
+        return moment.tz(fecha, TIMEZONE_ARGENTINA).isSame(hoy, 'day')
     }
 
     return (
@@ -96,7 +98,7 @@ export function CalendarioGrid({ fecha, inspecciones }: CalendarioGridProps) {
             {/* Grid de días */}
             <div className="grid grid-cols-7 gap-px bg-border rounded-b-lg overflow-hidden">
                 {dias.map((diaInfo, index) => {
-                    const fechaKey = moment(diaInfo.fecha).format('YYYY-MM-DD')
+                    const fechaKey = moment.tz(diaInfo.fecha, TIMEZONE_ARGENTINA).format('YYYY-MM-DD')
                     const inspeccionesDelDia = inspeccionesPorFecha[fechaKey] || []
 
                     return (

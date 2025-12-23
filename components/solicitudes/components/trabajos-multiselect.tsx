@@ -25,13 +25,15 @@ interface TrabajosMultiselectProps {
     selectedIds?: string[]
     onSelectionChange: (selectedIds: string[]) => void
     placeholder?: string
+    isLoading?: boolean
 }
 
 export function TrabajosMultiselect({
     trabajos = [],
     selectedIds = [],
     onSelectionChange,
-    placeholder = "Seleccionar trabajos..."
+    placeholder = "Seleccionar trabajos...",
+    isLoading = false
 }: TrabajosMultiselectProps) {
     const [open, setOpen] = React.useState(false)
 
@@ -58,6 +60,7 @@ export function TrabajosMultiselect({
                         role="combobox"
                         aria-expanded={open}
                         className="w-full justify-between"
+                        disabled={isLoading}
                     >
                         {selectedIds.length > 0
                             ? `${selectedIds.length} trabajo${selectedIds.length > 1 ? 's' : ''} seleccionado${selectedIds.length > 1 ? 's' : ''}`

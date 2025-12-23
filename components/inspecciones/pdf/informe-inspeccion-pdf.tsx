@@ -305,6 +305,63 @@ const styles = StyleSheet.create({
     right: 30,
     color: colors.gray,
   },
+  // Tabla resumen simplificada
+  tablaResumen: {
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  tablaHeader: {
+    flexDirection: "row",
+    backgroundColor: colors.lightGray,
+    borderWidth: 2,
+    borderColor: colors.border,
+  },
+  tablaHeaderCell: {
+    padding: 6,
+    borderRightWidth: 1,
+    borderColor: colors.border,
+    fontSize: 8,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  tablaRow: {
+    flexDirection: "row",
+    borderWidth: 2,
+    borderTopWidth: 0,
+    borderColor: colors.border,
+    minHeight: 40,
+  },
+  tablaCell: {
+    padding: 5,
+    borderRightWidth: 1,
+    borderColor: colors.border,
+    fontSize: 8,
+    justifyContent: "center",
+  },
+  tablaCellImage: {
+    padding: 2,
+    borderRightWidth: 1,
+    borderColor: colors.border,
+    width: 80,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tablaImage: {
+    width: 70,
+    height: 50,
+    objectFit: "contain",
+  },
+  resultadoCell: {
+    fontSize: 9,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  resultadoAprobadoCell: {
+    color: colors.success,
+  },
+  resultadoRechazadoCell: {
+    color: colors.danger,
+  },
 });
 
 // Tipos
@@ -315,27 +372,27 @@ export interface InformeData {
   fechaDocumento: string;
   fechaVencimiento?: string;
   codigoDocumento: string;
-  
+
   // Datos del cliente
   clienteNombre: string;
   clienteLogo?: string;
   terraLogoUrl?: string;
   contacto?: string;
   lugar: string;
-  
+
   // Datos de la inspección
   numeroInspeccion: string;
   equipo: string;
   fechaInspeccion: string;
   tipoInspeccion: string;
-  
+
   // QR
   qrDataUrl: string;
-  
+
   // Resultado
   resultado: "aprobado" | "rechazado" | "con_observaciones";
   observaciones?: string;
-  
+
   // Checklist completado
   secciones: Array<{
     nombre: string;
@@ -348,13 +405,27 @@ export interface InformeData {
       }>;
     }>;
   }>;
-  
+
   // Imágenes
   imagenes?: string[];
-  
+
   // Firmas
   operadorNombre?: string;
   supervisorNombre?: string;
+
+  // Tabla resumen (para nuevo formato simplificado)
+  itemsResumen?: Array<{
+    hoja: number;
+    identificacion: string; // Tipo de equipo
+    precinto?: string; // Pendiente de implementar
+    numeroSerie?: string; // Pendiente de implementar
+    resultadoPorTipo: Record<string, string>; // { "PM": "APROBADO", "LP": "RECHAZADO", etc. }
+    resultadoGeneral: "APROBADO" | "RECHAZADO";
+    imagen?: string; // URL de la imagen
+  }>;
+
+  // Tipos de ensayo disponibles para las columnas
+  tiposEnsayo?: string[]; // ["PM", "LP", "ME", "IV", "PH", etc.]
 }
 
 // Componente Header
@@ -547,18 +618,24 @@ function ChecklistSection({ seccion }: { seccion: InformeData["secciones"][0] })
 
 // Componente Imágenes
 function ImageSection({ imagenes }: { imagenes: string[] }) {
-  if (!imagenes || imagenes.length === 0) return null;
-
   return (
     <View style={styles.imageSection} wrap={false}>
       <Text style={styles.imageSectionTitle}>REFERENCIA FOTOGRÁFICA</Text>
-      <View style={styles.imageGrid}>
-        {imagenes.map((img, idx) => (
-          <View key={idx} style={styles.imageContainer}>
-            <Image style={styles.inspectionImage} src={img} />
-          </View>
-        ))}
-      </View>
+      {imagenes && imagenes.length > 0 ? (
+        <View style={styles.imageGrid}>
+          {imagenes.map((img, idx) => (
+            <View key={idx} style={styles.imageContainer}>
+              <Image style={styles.inspectionImage} src={img} />
+            </View>
+          ))}
+        </View>
+      ) : (
+        <View style={{ padding: 20, borderWidth: 2, borderTopWidth: 0, borderColor: colors.border }}>
+          <Text style={{ textAlign: "center", color: colors.gray }}>
+            No se adjuntaron imágenes de referencia.
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -577,6 +654,78 @@ function ResultadoFinal({ resultado }: { resultado: InformeData["resultado"] }) 
       >
         {resultado.toUpperCase()}
       </Text>
+    </View>
+  );
+}
+
+// Componente Tabla Resumen Simplificada
+function TablaResumenSimplificada({ data }: { data: InformeData }) {
+  if (!data.itemsResumen || data.itemsResumen.length === 0) return null;
+
+  // Obtener todos los tipos de ensayo únicos de todos los items
+  const tiposEnsayo = data.tiposEnsayo || [];
+  if (tiposEnsayo.length === 0) {
+    // Si no viene definido, extraer de los items
+    const tiposSet = new Set<string>();
+    data.itemsResumen.forEach(item => {
+      Object.keys(item.resultadoPorTipo).forEach(tipo => tiposSet.add(tipo));
+    });
+    tiposEnsayo.push(...Array.from(tiposSet).sort());
+  }
+
+  // Anchos de columnas ajustados
+  const colIdentificacion = 220;
+  const colTipoEnsayo = 60; // Por cada tipo de ensayo
+  const colResultadoGeneral = 70;
+
+  // No usamos anchoTotal para cálculo flexible, pero mantenemos proporciones
+
+  return (
+    <View style={styles.tablaResumen}>
+      {/* Header de la tabla */}
+      <View style={styles.tablaHeader}>
+        <View style={[styles.tablaHeaderCell, { width: colIdentificacion }]}>
+          <Text>IDENTIFICACIÓN</Text>
+        </View>
+        {/* Columnas dinámicas por tipo de ensayo */}
+        {tiposEnsayo.map((tipo) => (
+          <View key={tipo} style={[styles.tablaHeaderCell, { width: colTipoEnsayo }]}>
+            <Text>{tipo}</Text>
+          </View>
+        ))}
+        <View style={[styles.tablaHeaderCell, { width: colResultadoGeneral, borderRightWidth: 0 }]}>
+          <Text>RESULTADO GENERAL</Text>
+        </View>
+      </View>
+
+      {/* Filas de datos */}
+      {data.itemsResumen.map((item, idx) => (
+        <View key={idx} style={styles.tablaRow}>
+          <View style={[styles.tablaCell, { width: colIdentificacion }]}>
+            <Text>{item.identificacion}</Text>
+          </View>
+          {/* Celdas de resultados por tipo de ensayo */}
+          {tiposEnsayo.map((tipo) => (
+            <View key={tipo} style={[styles.tablaCell, { width: colTipoEnsayo }]}>
+              <Text style={styles.resultadoCell}>
+                {item.resultadoPorTipo[tipo] || "-"}
+              </Text>
+            </View>
+          ))}
+          <View style={[styles.tablaCell, { width: colResultadoGeneral, borderRightWidth: 0 }]}>
+            <Text
+              style={[
+                styles.resultadoCell,
+                item.resultadoGeneral === "APROBADO"
+                  ? styles.resultadoAprobadoCell
+                  : styles.resultadoRechazadoCell,
+              ]}
+            >
+              {item.resultadoGeneral}
+            </Text>
+          </View>
+        </View>
+      ))}
     </View>
   );
 }
@@ -605,27 +754,43 @@ export function InformeInspeccionPDF({ data }: { data: InformeData }) {
         <FooterSignatures />
       </Page>
 
-      {/* Página 2+: Detalle del checklist */}
+      {/* Página 2: Tabla resumen simplificada */}
       <Page size="A4" style={styles.page}>
         <Header data={data} />
         <View style={styles.pageContent}>
           {/* Resultado general */}
           <ResultadoFinal resultado={data.resultado} />
-          
-          {/* Secciones del checklist */}
-          {data.secciones.map((seccion, idx) => (
-            <ChecklistSection key={idx} seccion={seccion} />
-          ))}
 
-          {/* Observaciones */}
-          {data.observaciones && (
-            <View style={{ marginTop: 15 }}>
-              <Text style={styles.infoLabel}>OBSERVACIONES:</Text>
-              <Text style={styles.infoValue}>{data.observaciones}</Text>
-            </View>
+          {/* Tabla resumen simplificada - si existe itemsResumen, usar formato nuevo */}
+          {data.itemsResumen && data.itemsResumen.length > 0 ? (
+            <>
+              <TablaResumenSimplificada data={data} />
+              {/* Observaciones para el nuevo formato */}
+              {data.observaciones && (
+                <View style={{ marginTop: 15 }}>
+                  <Text style={styles.infoLabel}>OBSERVACIONES:</Text>
+                  <Text style={styles.infoValue}>{data.observaciones}</Text>
+                </View>
+              )}
+            </>
+          ) : (
+            // Formato antiguo (checklist detallado) - mantener por compatibilidad
+            <>
+              {data.secciones.map((seccion, idx) => (
+                <ChecklistSection key={idx} seccion={seccion} />
+              ))}
+
+              {/* Observaciones */}
+              {data.observaciones && (
+                <View style={{ marginTop: 15 }}>
+                  <Text style={styles.infoLabel}>OBSERVACIONES:</Text>
+                  <Text style={styles.infoValue}>{data.observaciones}</Text>
+                </View>
+              )}
+            </>
           )}
 
-          {/* Imágenes */}
+          {/* Imágenes - Ahora fuera del condicional para que aparezca en ambos formatos */}
           <ImageSection imagenes={data.imagenes || []} />
 
           {/* Disclaimer */}

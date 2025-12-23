@@ -34,6 +34,9 @@ export function SolicitudRowActions({ solicitud }: SolicitudRowActionsProps) {
     const [clientes, setClientes] = React.useState<Awaited<ReturnType<typeof getClientesActivos>>>([])
     const [tiposInspeccion, setTiposInspeccion] = React.useState<Awaited<ReturnType<typeof getTiposInspeccion>>>([])
     const [equipos, setEquipos] = React.useState<Awaited<ReturnType<typeof getEquiposActivos>>>([])
+    const [isLoadingClientes, setIsLoadingClientes] = React.useState(false)
+    const [isLoadingTrabajos, setIsLoadingTrabajos] = React.useState(false)
+    const [isLoadingEquipos, setIsLoadingEquipos] = React.useState(false)
 
     const { userProfile } = useUserType()
     const isPendiente = solicitud.estado === "pendiente"
@@ -43,6 +46,9 @@ export function SolicitudRowActions({ solicitud }: SolicitudRowActionsProps) {
     // Cargar datos cuando se abre el modal de edición
     React.useEffect(() => {
         if (editOpen) {
+            setIsLoadingClientes(true)
+            setIsLoadingTrabajos(true)
+            setIsLoadingEquipos(true)
             Promise.all([
                 getClientesActivos(),
                 getTiposInspeccion(),
@@ -51,7 +57,21 @@ export function SolicitudRowActions({ solicitud }: SolicitudRowActionsProps) {
                 setClientes(clientesData)
                 setTiposInspeccion(tiposData)
                 setEquipos(equiposData)
+            }).catch((error) => {
+                console.error("Error loading data:", error)
+            }).finally(() => {
+                setIsLoadingClientes(false)
+                setIsLoadingTrabajos(false)
+                setIsLoadingEquipos(false)
             })
+        } else {
+            // Resetear estados cuando se cierra el modal
+            setClientes([])
+            setTiposInspeccion([])
+            setEquipos([])
+            setIsLoadingClientes(false)
+            setIsLoadingTrabajos(false)
+            setIsLoadingEquipos(false)
         }
     }, [editOpen])
 
@@ -171,6 +191,9 @@ export function SolicitudRowActions({ solicitud }: SolicitudRowActionsProps) {
                 clientes={clientes}
                 trabajos={tiposInspeccion}
                 equipos={equipos}
+                isLoadingClientes={isLoadingClientes}
+                isLoadingTrabajos={isLoadingTrabajos}
+                isLoadingEquipos={isLoadingEquipos}
                 onSubmit={handleEdit}
                 isLoading={isLoading}
             />

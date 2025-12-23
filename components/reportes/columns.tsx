@@ -7,8 +7,10 @@ import { DataTableColumnHeader } from "@/components/tables/data-table-column-hea
 import { VerificacionCompleta } from "./actions"
 import { ExternalLink } from "lucide-react"
 import Link from "next/link"
-import moment from "moment"
+import moment from "moment-timezone"
 import "moment/locale/es"
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires'
 
 const getResultadoBadge = (resultado: string) => {
     switch (resultado) {
@@ -129,7 +131,7 @@ export const columns: ColumnDef<VerificacionCompleta>[] = [
             if (!fecha) return <div className="text-sm">N/A</div>
             return (
                 <div className="text-sm">
-                    {moment(fecha).locale('es').format('DD/MM/YYYY')}
+                    {moment.tz(fecha, TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY')}
                 </div>
             )
         },
@@ -145,7 +147,7 @@ export const columns: ColumnDef<VerificacionCompleta>[] = [
             if (!fecha) return <div className="text-sm">N/A</div>
             return (
                 <div className="text-sm">
-                    {moment(fecha).locale('es').format('DD/MM/YYYY')}
+                    {moment.tz(fecha, TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY')}
                 </div>
             )
         },

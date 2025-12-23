@@ -3,8 +3,10 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import { createClient } from "@/lib/supabase/server";
 import { InformeInspeccionPDF, type InformeData } from "@/components/inspecciones/pdf/informe-inspeccion-pdf";
 import { generateDocumentQR } from "@/lib/pdf/qr-generator";
-import moment from "moment";
+import moment from "moment-timezone";
 import "moment/locale/es";
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires';
 
 export async function GET(
   request: NextRequest,
@@ -41,7 +43,21 @@ export async function GET(
             logo
           ),
           imagenes:solicitud_imagenes (
-            imagen_url
+            imagen_url,
+            orden
+          ),
+          items:solicitud_items (
+            id,
+            descripcion,
+            cantidad,
+            orden,
+            inspections:solicitud_item_inspections (
+              inspection_type:item_inspection_types (
+                id,
+                codigo,
+                nombre
+              )
+            )
           ),
           trabajos:solicitud_trabajos (
             tipo_inspeccion:tipos_inspeccion_checklist (
@@ -171,19 +187,75 @@ export async function GET(
     const solicitud = inspeccion.solicitud as any;
     const tipoInspeccion = solicitud?.trabajos?.[0]?.tipo_inspeccion?.nombre || "Inspección General";
     const imagenes = solicitud?.imagenes?.map((img: any) => img.imagen_url) || [];
+    const items = solicitud?.items || [];
 
     const fechaInspeccion = inspeccion.fecha_completada
-      ? moment(inspeccion.fecha_completada).locale('es').format('DD/MM/YYYY')
-      : moment().locale('es').format('DD/MM/YYYY');
+      ? moment.tz(inspeccion.fecha_completada, TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY')
+      : moment.tz(TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY');
 
     const fechaVencimiento = inspeccion.fecha_completada
-      ? moment(inspeccion.fecha_completada).add(1, 'year').locale('es').format('DD/MM/YYYY')
+      ? moment.tz(inspeccion.fecha_completada, TIMEZONE_ARGENTINA).add(1, 'year').locale('es').format('DD/MM/YYYY')
       : undefined;
+
+    // Construir tabla resumen simplificada desde los items
+    const resultadoGeneral = (documento.resultado === "aprobado" ? "APROBADO" :
+      documento.resultado === "rechazado" ? "RECHAZADO" : "APROBADO") as "APROBADO" | "RECHAZADO";
+
+    // Obtener todos los tipos de ensayo únicos de los items
+    const tiposEnsayoSet = new Set<string>();
+    items.forEach((item: any) => {
+      item.inspections?.forEach((insp: any) => {
+        if (insp.inspection_type?.codigo) {
+          tiposEnsayoSet.add(insp.inspection_type.codigo);
+        }
+      });
+    });
+    const tiposEnsayo = Array.from(tiposEnsayoSet).sort();
+
+    // Construir items para la tabla resumen
+    const itemsResumen = items.map((item: any, index: number) => {
+      // Obtener tipos de inspección del item
+      const resultadoPorTipo: Record<string, string> = {};
+
+      item.inspections?.forEach((insp: any) => {
+        if (insp.inspection_type?.codigo) {
+          // Por ahora, todos tienen el mismo resultado general
+          // En el futuro se puede determinar por tipo específico
+          resultadoPorTipo[insp.inspection_type.codigo] = resultadoGeneral;
+        }
+      });
+
+      // Distribuir imágenes: si hay múltiples imágenes, asignar una por item (circular)
+      const imagen = imagenes.length > 0 ? imagenes[index % imagenes.length] : undefined;
+
+      return {
+        hoja: index + 1,
+        identificacion: item.descripcion || inspeccion.equipo || "N/A",
+        precinto: undefined, // Pendiente de implementar
+        numeroSerie: undefined, // Pendiente de implementar
+        resultadoPorTipo,
+        resultadoGeneral,
+        imagen,
+      };
+    });
+
+    // Si no hay items, crear un item único con la info general para forzar el formato nuevo
+    if (itemsResumen.length === 0) {
+      itemsResumen.push({
+        hoja: 1,
+        identificacion: inspeccion.equipo || "Sin identificación",
+        precinto: undefined,
+        numeroSerie: undefined,
+        resultadoPorTipo: { "GENERAL": resultadoGeneral },
+        resultadoGeneral,
+        imagen: imagenes[0],
+      });
+    }
 
     const informeData: InformeData = {
       numeroDocumento: documento.numero_documento,
       revision: documento.revision || "00",
-      fechaDocumento: moment(documento.fecha_documento).locale('es').format('DD/MM/YYYY'),
+      fechaDocumento: moment.tz(documento.fecha_documento, TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY'),
       fechaVencimiento,
       codigoDocumento: "MKG-R09-00 rev.00",
       clienteNombre: solicitud?.cliente?.nombre || inspeccion.cliente_nombre || "Cliente",
@@ -196,11 +268,14 @@ export async function GET(
       qrDataUrl,
       resultado: (documento.resultado as "aprobado" | "rechazado" | "con_observaciones") || "aprobado",
       observaciones: documento.observaciones_generales || undefined,
-      secciones,
-      imagenes,
+      secciones, // Mantener para compatibilidad con formato antiguo
+      imagenes, // Mantener para compatibilidad
       operadorNombre: documento.operador_nombre || undefined,
       supervisorNombre: documento.supervisor_nombre || undefined,
       terraLogoUrl: `${baseUrl}/terra-logo-light.jpg`,
+      // Nuevos campos para tabla resumen
+      itemsResumen: itemsResumen.length > 0 ? itemsResumen : undefined,
+      tiposEnsayo: tiposEnsayo.length > 0 ? tiposEnsayo : undefined,
     };
 
     // Generar PDF

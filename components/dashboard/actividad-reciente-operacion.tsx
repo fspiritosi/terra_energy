@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { FileText } from "lucide-react";
 import Link from "next/link";
 import { getSolicitudesRecientesOperacion } from "./dashboard-operacion-actions";
-import moment from "moment";
+import moment from "moment-timezone";
 import "moment/locale/es";
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires';
 
 export async function ActividadRecienteOperacion() {
     const solicitudes = await getSolicitudesRecientesOperacion(5);
@@ -23,7 +25,8 @@ export async function ActividadRecienteOperacion() {
     };
 
     const formatFecha = (fecha: string) => {
-        return moment(fecha).locale('es').format('DD/MM/YYYY');
+        // Parsear fecha DATE (YYYY-MM-DD) como fecha local en Argentina
+        return moment.tz(fecha + ' 00:00:00', 'YYYY-MM-DD HH:mm:ss', TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY');
     };
 
     return (

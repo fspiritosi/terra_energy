@@ -11,8 +11,10 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { EquipoRowActions } from "./equipo-row-actions"
 import { Equipo } from "./actions"
-import moment from "moment"
+import moment from "moment-timezone"
 import "moment/locale/es"
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires'
 
 interface EquiposTableProps {
     data: Equipo[]
@@ -56,7 +58,7 @@ export function EquiposTable({ data, onEdit, onDelete }: EquiposTableProps) {
                                 </Badge>
                             </TableCell>
                             <TableCell>
-                                {equipo.created_at ? moment(equipo.created_at).locale('es').format('DD/MM/YYYY') : "-"}
+                                {equipo.created_at ? moment.tz(equipo.created_at, TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY') : "-"}
                             </TableCell>
                             <TableCell>
                                 <EquipoRowActions

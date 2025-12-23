@@ -16,8 +16,10 @@ import { type ChecklistCompleto } from "@/components/inspecciones/components/che
 import { getInspeccionesByTipoInspeccion } from "./actions";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Calendar, FileText } from "lucide-react";
-import moment from "moment";
+import moment from "moment-timezone";
 import "moment/locale/es";
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires';
 
 interface TipoInspeccionDetailsDialogProps {
   open: boolean;
@@ -221,12 +223,12 @@ export function TipoInspeccionDetailsDialog({
                           </TableCell>
                           <TableCell className="whitespace-nowrap">
                             {inspeccion.fecha_programada
-                              ? moment(inspeccion.fecha_programada).locale('es').format('DD/MM/YYYY')
+                              ? moment.tz(inspeccion.fecha_programada + ' 00:00:00', 'YYYY-MM-DD HH:mm:ss', TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY')
                               : "N/A"}
                           </TableCell>
                           <TableCell className="whitespace-nowrap">
                             {inspeccion.fecha_completada
-                              ? moment(inspeccion.fecha_completada).locale('es').format('DD/MM/YYYY')
+                              ? moment.tz(inspeccion.fecha_completada + ' 00:00:00', 'YYYY-MM-DD HH:mm:ss', TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY')
                               : "N/A"}
                           </TableCell>
                         </TableRow>

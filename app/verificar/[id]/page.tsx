@@ -21,8 +21,10 @@ import {
   MinusSquare
 } from "lucide-react";
 import Link from "next/link";
-import moment from "moment";
+import moment from "moment-timezone";
 import "moment/locale/es";
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -452,7 +454,7 @@ export default async function VerificarDocumentoPage({ params }: PageProps) {
                     <Calendar className="h-3 w-3 text-primary" /> Fecha Emisión
                   </p>
                   <p className="font-semibold text-foreground">
-                    {moment(documento.fecha_documento).locale('es').format('DD/MM/YYYY')}
+                    {moment.tz(documento.fecha_documento, TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY')}
                   </p>
                 </div>
                 {documento.fecha_vencimiento && (
@@ -461,7 +463,7 @@ export default async function VerificarDocumentoPage({ params }: PageProps) {
                       <Calendar className="h-3 w-3 text-primary" /> Vencimiento
                     </p>
                     <p className="font-semibold text-foreground">
-                      {moment(documento.fecha_vencimiento).locale('es').format('DD/MM/YYYY')}
+                      {moment.tz(documento.fecha_vencimiento, TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY')}
                     </p>
                   </div>
                 )}
@@ -509,7 +511,7 @@ export default async function VerificarDocumentoPage({ params }: PageProps) {
                       <Calendar className="h-3 w-3 text-primary" /> Fecha de Inspección
                     </p>
                     <p className="font-semibold text-foreground">
-                      {moment(inspeccion.fecha_completada).locale('es').format('DD/MM/YYYY')}
+                      {moment.tz(inspeccion.fecha_completada, TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY')}
                     </p>
                   </div>
                 )}
@@ -660,7 +662,7 @@ export default async function VerificarDocumentoPage({ params }: PageProps) {
             realizaron las inspecciones.
           </p>
           <p className="text-primary font-medium">
-            © {moment().year()} Terra Energy Services. Todos los derechos reservados.
+            © {moment.tz(TIMEZONE_ARGENTINA).year()} Terra Energy Services. Todos los derechos reservados.
           </p>
         </div>
       </main>

@@ -1,4 +1,5 @@
 import { createClient } from "./client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export async function ensureSolicitudesImagesBucket() {
   // El bucket 'solicitudes-imagenes' ya existe y está configurado
@@ -9,9 +10,11 @@ export async function ensureSolicitudesImagesBucket() {
 export async function uploadSolicitudImage(
   solicitudId: string,
   file: File,
-  orden: number
+  orden: number,
+  supabaseClient?: SupabaseClient
 ): Promise<{ url: string; fileName: string } | null> {
-  const supabase = createClient();
+  // Si no se proporciona un cliente, usar el del cliente (para compatibilidad)
+  const supabase = supabaseClient || createClient();
 
   try {
     // Generar nombre único para el archivo en storage

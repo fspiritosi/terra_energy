@@ -7,8 +7,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { Usuario } from "./actions"
 import { UsuarioRowActions } from "./usuario-row-actions"
-import moment from "moment"
+import moment from "moment-timezone"
 import "moment/locale/es"
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires'
 
 export const columns: ColumnDef<Usuario>[] = [
     {
@@ -131,9 +133,10 @@ export const columns: ColumnDef<Usuario>[] = [
         ),
         cell: ({ row }) => {
             const date = row.getValue("created_at") as string
+            // created_at es TIMESTAMP, usar parseo directo con timezone
             return (
                 <div className="text-sm">
-                    {moment(date).locale('es').format('DD/MM/YYYY')}
+                    {moment.tz(date, TIMEZONE_ARGENTINA).locale('es').format('DD/MM/YYYY')}
                 </div>
             )
         },

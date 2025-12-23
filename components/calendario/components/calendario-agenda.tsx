@@ -2,8 +2,10 @@
 
 import { Badge } from "@/components/ui/badge"
 import { getInspeccionesType } from "@/components/inspecciones/components"
-import moment from "moment"
+import moment from "moment-timezone"
 import "moment/locale/es"
+
+const TIMEZONE_ARGENTINA = 'America/Argentina/Buenos_Aires'
 
 interface CalendarioAgendaProps {
     fecha: Date
@@ -11,7 +13,7 @@ interface CalendarioAgendaProps {
 }
 
 export function CalendarioAgenda({ fecha, inspecciones }: CalendarioAgendaProps) {
-    const fechaMoment = moment(fecha)
+    const fechaMoment = moment.tz(fecha, TIMEZONE_ARGENTINA)
     const año = fechaMoment.year()
     const mes = fechaMoment.month()
 
@@ -28,7 +30,7 @@ export function CalendarioAgenda({ fecha, inspecciones }: CalendarioAgendaProps)
     // Obtener todas las fechas del mes que tienen inspecciones, ordenadas
     const fechasConInspecciones = Object.keys(inspeccionesPorFecha)
         .filter(fechaKey => {
-            const fechaInspeccion = moment(fechaKey)
+            const fechaInspeccion = moment.tz(fechaKey, TIMEZONE_ARGENTINA)
             return fechaInspeccion.month() === mes && fechaInspeccion.year() === año
         })
         .sort()
