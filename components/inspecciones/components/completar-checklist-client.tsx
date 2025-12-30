@@ -144,9 +144,188 @@ export function CompletarChecklistClient({
     }
   };
 
+  // Función para extraer valores mínimos/máximos de la descripción del requisito
+  const extraerValoresLimite = (descripcion: string): { minimo?: number; maximo?: number } => {
+    const limites: { minimo?: number; maximo?: number } = {};
+    
+    // Buscar patrones como "mínima sea de 1000", "mínimo de 1000", "mínima de 1000"
+    const patronMinimo = /mínim[ao]\s+(?:sea\s+de|de|:)\s*(\d+(?:\.\d+)?)/i;
+    const matchMinimo = descripcion.match(patronMinimo);
+    if (matchMinimo) {
+      limites.minimo = parseFloat(matchMinimo[1]);
+    }
+    
+    // Buscar patrones como "máxima sea de 1000", "máximo de 1000", "máxima de 1000"
+    const patronMaximo = /máxim[ao]\s+(?:sea\s+de|de|:)\s*(\d+(?:\.\d+)?)/i;
+    const matchMaximo = descripcion.match(patronMaximo);
+    if (matchMaximo) {
+      limites.maximo = parseFloat(matchMaximo[1]);
+    }
+    
+    // Buscar rangos como "entre 10 y 52", "de 10 a 52"
+    const patronRango = /(?:entre|de)\s+(\d+(?:\.\d+)?)\s+(?:y|a)\s+(\d+(?:\.\d+)?)/i;
+    const matchRango = descripcion.match(patronRango);
+    if (matchRango) {
+      limites.minimo = parseFloat(matchRango[1]);
+      limites.maximo = parseFloat(matchRango[2]);
+    }
+    
+    return limites;
+  };
+
+  // Validar completitud y valores de las respuestas
+  const validarRespuestas = (): { valido: boolean; errores: string[] } => {
+    const errores: string[] = [];
+    const requisitosRequeridos = new Set<string>();
+    const requisitosRespondidos = new Set<string>();
+
+    // Recopilar todos los requisitos requeridos de todos los checklists
+    Object.values(checklists).forEach((checklist) => {
+      checklist.secciones.forEach((seccion) => {
+        seccion.requisitos.forEach((requisito) => {
+          requisitosRequeridos.add(requisito.id);
+        });
+        seccion.subcategorias.forEach((subcategoria) => {
+          subcategoria.requisitos.forEach((requisito) => {
+            requisitosRequeridos.add(requisito.id);
+          });
+        });
+      });
+    });
+
+    // Verificar que cada requisito tenga al menos una respuesta
+    requisitosRequeridos.forEach((requisitoId) => {
+      const respuestasRequisito = respuestas[requisitoId];
+      if (!respuestasRequisito || Object.keys(respuestasRequisito).length === 0) {
+        // Buscar la descripción del requisito para el mensaje de error
+        let descripcion = "Requisito";
+        Object.values(checklists).forEach((checklist) => {
+          checklist.secciones.forEach((seccion) => {
+            const requisito = seccion.requisitos.find((r) => r.id === requisitoId);
+            if (requisito) descripcion = requisito.descripcion;
+            seccion.subcategorias.forEach((subcategoria) => {
+              const requisito = subcategoria.requisitos.find((r) => r.id === requisitoId);
+              if (requisito) descripcion = requisito.descripcion;
+            });
+          });
+        });
+        errores.push(`Falta responder: ${descripcion.substring(0, 60)}...`);
+      } else {
+        requisitosRespondidos.add(requisitoId);
+        
+        // Buscar la descripción del requisito una vez
+        let descripcionRequisito = "";
+        Object.values(checklists).forEach((checklist) => {
+          checklist.secciones.forEach((seccion) => {
+            const requisito = seccion.requisitos.find((r) => r.id === requisitoId);
+            if (requisito) descripcionRequisito = requisito.descripcion;
+            seccion.subcategorias.forEach((subcategoria) => {
+              const requisito = subcategoria.requisitos.find((r) => r.id === requisitoId);
+              if (requisito) descripcionRequisito = requisito.descripcion;
+            });
+          });
+        });
+        
+        // Buscar qué tipos de respuesta tiene este requisito
+        let tiposRespuestaRequisito: Array<{ id: string; codigo: string; tipo_dato: string }> = [];
+        Object.values(checklists).forEach((checklist) => {
+          checklist.secciones.forEach((seccion) => {
+            const requisito = seccion.requisitos.find((r) => r.id === requisitoId);
+            if (requisito) tiposRespuestaRequisito = requisito.tipos_respuesta;
+            seccion.subcategorias.forEach((subcategoria) => {
+              const requisito = subcategoria.requisitos.find((r) => r.id === requisitoId);
+              if (requisito) tiposRespuestaRequisito = requisito.tipos_respuesta;
+            });
+          });
+        });
+        
+        // Validar cada tipo de respuesta según su tipo
+        // Primero, verificar si hay tipos booleanos (verificacion o si_no) - estos son obligatorios
+        const tiposBooleanos = tiposRespuestaRequisito.filter(
+          (t) => t.tipo_dato === "booleano" && (t.codigo === "verificacion" || t.codigo === "si_no")
+        );
+        
+        tiposBooleanos.forEach((tipoRespuesta) => {
+          const respuesta = respuestasRequisito[tipoRespuesta.id];
+          // Si es un tipo booleano obligatorio, debe tener valor
+          if (!respuesta || respuesta.valor_booleano === null || respuesta.valor_booleano === undefined) {
+            errores.push(`Debe seleccionar Sí o No para: ${descripcionRequisito.substring(0, 60)}...`);
+          } else if (respuesta.valor_booleano === true) {
+            // Si marcó "Sí" (true) y hay un tipo de respuesta numérico, validar el valor si está presente
+            const tipoValorMedido = tiposRespuestaRequisito.find(
+              (t) => t.tipo_dato === "numero" && t.codigo === "valor_medido"
+            );
+            if (tipoValorMedido) {
+              const respuestaValor = respuestasRequisito[tipoValorMedido.id];
+              // Si hay un valor numérico ingresado, debe cumplir límites
+              if (respuestaValor && respuestaValor.valor_numero !== null && respuestaValor.valor_numero !== undefined) {
+                const limites = extraerValoresLimite(descripcionRequisito);
+                if (limites.minimo !== undefined && respuestaValor.valor_numero < limites.minimo) {
+                  errores.push(
+                    `El valor medido (${respuestaValor.valor_numero}) está por debajo del mínimo requerido (${limites.minimo}) en: ${descripcionRequisito.substring(0, 50)}...`
+                  );
+                }
+                if (limites.maximo !== undefined && respuestaValor.valor_numero > limites.maximo) {
+                  errores.push(
+                    `El valor medido (${respuestaValor.valor_numero}) está por encima del máximo permitido (${limites.maximo}) en: ${descripcionRequisito.substring(0, 50)}...`
+                  );
+                }
+              }
+            }
+          }
+          // Si marcó "No" (false), no validar valores numéricos (se rechaza directamente)
+        });
+        
+        // Validar tipos numéricos solo si NO hay verificación asociada (casos donde el valor es obligatorio)
+        const tiposNumericos = tiposRespuestaRequisito.filter(
+          (t) => t.tipo_dato === "numero" && t.codigo === "valor_medido"
+        );
+        
+        tiposNumericos.forEach((tipoRespuesta) => {
+          // Verificar si hay un tipo de verificación asociado
+          const tieneVerificacion = tiposBooleanos.length > 0;
+          
+          // Si NO tiene verificación, el valor numérico es opcional pero si está presente debe cumplir límites
+          if (!tieneVerificacion) {
+            const respuesta = respuestasRequisito[tipoRespuesta.id];
+            if (respuesta && respuesta.valor_numero !== null && respuesta.valor_numero !== undefined) {
+              const limites = extraerValoresLimite(descripcionRequisito);
+              if (limites.minimo !== undefined && respuesta.valor_numero < limites.minimo) {
+                errores.push(
+                  `El valor medido (${respuesta.valor_numero}) está por debajo del mínimo requerido (${limites.minimo}) en: ${descripcionRequisito.substring(0, 50)}...`
+                );
+              }
+              if (limites.maximo !== undefined && respuesta.valor_numero > limites.maximo) {
+                errores.push(
+                  `El valor medido (${respuesta.valor_numero}) está por encima del máximo permitido (${limites.maximo}) en: ${descripcionRequisito.substring(0, 50)}...`
+                );
+              }
+            }
+          }
+        });
+      }
+    });
+
+    return {
+      valido: errores.length === 0,
+      errores,
+    };
+  };
+
   const handleCompletar = async () => {
     setIsSaving(true);
     try {
+      // Validar respuestas antes de continuar
+      const validacion = validarRespuestas();
+      if (!validacion.valido) {
+        toast.error("No se puede completar la inspección. Hay errores:", {
+          description: validacion.errores.slice(0, 3).join(" • "),
+          duration: 5000,
+        });
+        setIsSaving(false);
+        return;
+      }
+
       // Guardar respuestas
       const respuestasArray: RespuestaChecklist[] = [];
       for (const requisitoId in respuestas) {
@@ -157,18 +336,48 @@ export function CompletarChecklistClient({
 
       await guardarRespuestasChecklist(inspeccionId, respuestasArray);
 
+      // Determinar resultado basado en respuestas booleanas y valores numéricos
+      const respuestasBooleanas = respuestasArray.filter(
+        (r) => r.valor_booleano !== undefined && r.valor_booleano !== null
+      );
+      const hayRechazosBooleanos = respuestasBooleanas.some((r) => r.valor_booleano === false);
+      
+      // Verificar valores numéricos fuera de rango
+      let hayValoresFueraDeRango = false;
+      respuestasArray.forEach((respuesta) => {
+        if (respuesta.valor_numero !== null && respuesta.valor_numero !== undefined) {
+          // Buscar la descripción del requisito usando el requisito_id de la respuesta
+          let descripcion = "";
+          Object.values(checklists).forEach((checklist) => {
+            checklist.secciones.forEach((seccion) => {
+              const requisito = seccion.requisitos.find((r) => r.id === respuesta.requisito_id);
+              if (requisito) descripcion = requisito.descripcion;
+              seccion.subcategorias.forEach((subcategoria) => {
+                const requisito = subcategoria.requisitos.find((r) => r.id === respuesta.requisito_id);
+                if (requisito) descripcion = requisito.descripcion;
+              });
+            });
+          });
+          
+          if (descripcion) {
+            const limites = extraerValoresLimite(descripcion);
+            if (
+              (limites.minimo !== undefined && respuesta.valor_numero < limites.minimo) ||
+              (limites.maximo !== undefined && respuesta.valor_numero > limites.maximo)
+            ) {
+              hayValoresFueraDeRango = true;
+            }
+          }
+        }
+      });
+
+      const resultado = hayRechazosBooleanos || hayValoresFueraDeRango ? "rechazado" : "aprobado";
+
       // Marcar inspección como completada
       await updateInspeccion({
         id: inspeccionId,
         estado: "completada",
       });
-
-      // Determinar resultado basado en respuestas booleanas
-      const respuestasBooleanas = respuestasArray.filter(
-        (r) => r.valor_booleano !== undefined && r.valor_booleano !== null
-      );
-      const hayRechazos = respuestasBooleanas.some((r) => r.valor_booleano === false);
-      const resultado = hayRechazos ? "rechazado" : "aprobado";
 
       // Generar documento PDF
       toast.info("Generando documento de inspección...");

@@ -4,7 +4,6 @@ import * as React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -29,39 +28,28 @@ export function ChecklistForm({ checklist, respuestas, onRespuestaChange }: Chec
 
     switch (tipoRespuesta.tipo_dato) {
       case "booleano":
-        if (tipoRespuesta.codigo === "verificacion") {
-          return (
-            <Checkbox
-              checked={respuesta?.valor_booleano ?? false}
-              onCheckedChange={(checked) =>
-                onRespuestaChange(requisitoId, tipoRespuesta.id, {
-                  valor_booleano: checked,
-                })
-              }
-            />
-          );
-        } else {
-          // Si/No
-          return (
-            <RadioGroup
-              value={respuesta?.valor_booleano === true ? "si" : respuesta?.valor_booleano === false ? "no" : ""}
-              onValueChange={(value) =>
-                onRespuestaChange(requisitoId, tipoRespuesta.id, {
-                  valor_booleano: value === "si",
-                })
-              }
-            >
+        // Tanto "verificacion" como "si_no" usan RadioGroup Sí/No
+        return (
+          <RadioGroup
+            value={respuesta?.valor_booleano === true ? "si" : respuesta?.valor_booleano === false ? "no" : ""}
+            onValueChange={(value) =>
+              onRespuestaChange(requisitoId, tipoRespuesta.id, {
+                valor_booleano: value === "si" ? true : value === "no" ? false : null,
+              })
+            }
+          >
+            <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="si" id={`${requisitoId}-${tipoRespuesta.id}-si`} />
-                <Label htmlFor={`${requisitoId}-${tipoRespuesta.id}-si`}>Sí</Label>
+                <Label htmlFor={`${requisitoId}-${tipoRespuesta.id}-si`} className="cursor-pointer">Sí</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="no" id={`${requisitoId}-${tipoRespuesta.id}-no`} />
-                <Label htmlFor={`${requisitoId}-${tipoRespuesta.id}-no`}>No</Label>
+                <Label htmlFor={`${requisitoId}-${tipoRespuesta.id}-no`} className="cursor-pointer">No</Label>
               </div>
-            </RadioGroup>
-          );
-        }
+            </div>
+          </RadioGroup>
+        );
 
       case "numero":
         return (
