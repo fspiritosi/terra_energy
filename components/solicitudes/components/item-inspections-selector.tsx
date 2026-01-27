@@ -13,13 +13,15 @@ interface ItemInspectionsSelectorProps {
     selectedInspections: string[]
     onSelectionChange: (selectedIds: string[]) => void
     disabled?: boolean
+    hasError?: boolean
 }
 
 export function ItemInspectionsSelector({
     inspectionTypes,
     selectedInspections,
     onSelectionChange,
-    disabled = false
+    disabled = false,
+    hasError = false
 }: ItemInspectionsSelectorProps) {
     const handleInspectionToggle = (inspectionId: string, checked: boolean) => {
         if (checked) {
@@ -32,7 +34,7 @@ export function ItemInspectionsSelector({
     return (
         <TooltipProvider>
             <div className="space-y-3">
-                <Label className="text-sm font-medium">Tipos de Inspección</Label>
+                <Label className={`text-sm font-medium ${hasError ? "text-red-500" : ""}`}>Tipos de Inspección *</Label>
 
                 {disabled && inspectionTypes.length === 0 ? (
                     <div className="bg-muted/50 p-3 rounded-md text-sm text-muted-foreground text-center">

@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Trash2, Plus } from "lucide-react"
+import { Trash2, Plus, AlertCircle } from "lucide-react"
 import { SolicitudItem } from "./solicitud-actions"
 import { ItemInspectionType, getItemInspectionTypes } from "./actions"
 import { ItemInspectionsSelector } from "./item-inspections-selector"
@@ -16,16 +16,52 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion"
 import { useEffect, useState } from "react"
+import { FieldError, FieldErrorsImpl, Merge } from "react-hook-form"
+
+type ItemError = {
+    descripcion?: FieldError
+    cantidad?: FieldError
+    inspections?: FieldError | Merge<FieldError, FieldErrorsImpl<string[]>>
+}
 
 interface ItemsManagerProps {
     items: SolicitudItem[]
     onItemsChange: (items: SolicitudItem[]) => void
+    errors?: Merge<FieldError, (ItemError | undefined)[]> | FieldError
 }
 
-export function ItemsManager({ items, onItemsChange }: ItemsManagerProps) {
+export function ItemsManager({ items, onItemsChange, errors }: ItemsManagerProps) {
     const [inspectionTypes, setInspectionTypes] = useState<ItemInspectionType[]>([])
     const [loading, setLoading] = useState(true)
     const [openAccordions, setOpenAccordions] = useState<string[]>([])
+
+    // Obtener errores como array si existe
+    const itemErrors = errors && Array.isArray(errors) ? errors : []
+
+    // Función para verificar si un item tiene errores
+    const hasItemError = (index: number): boolean => {
+        if (!itemErrors[index]) return false
+        const err = itemErrors[index] as ItemError
+        return !!(err?.descripcion || err?.cantidad || err?.inspections)
+    }
+
+    // Abrir automáticamente acordeones con errores
+    useEffect(() => {
+        if (itemErrors.length > 0) {
+            const indicesWithErrors: string[] = []
+            itemErrors.forEach((err, index) => {
+                if (err && (err.descripcion || err.cantidad || err.inspections)) {
+                    indicesWithErrors.push(index.toString())
+                }
+            })
+            if (indicesWithErrors.length > 0) {
+                setOpenAccordions(prev => {
+                    const newOpen = [...new Set([...prev, ...indicesWithErrors])]
+                    return newOpen
+                })
+            }
+        }
+    }, [itemErrors])
 
     // Cargar tipos de inspección
     useEffect(() => {
@@ -121,8 +157,12 @@ export function ItemsManager({ items, onItemsChange }: ItemsManagerProps) {
             )}
 
             <div className="space-y-4">
-                {items.map((item, index) => (
-                    <Card key={index}>
+                {items.map((item, index) => {
+                    const itemError = itemErrors[index] as ItemError | undefined
+                    const hasError = hasItemError(index)
+
+                    return (
+                    <Card key={index} className={hasError ? "border-red-500 border-2" : ""}>
                         <Accordion
                             type="multiple"
                             value={openAccordions}
@@ -131,10 +171,18 @@ export function ItemsManager({ items, onItemsChange }: ItemsManagerProps) {
                             <AccordionItem value={`${index}`} className="border-none">
                                 <div className="flex items-center justify-between p-6">
                                     <AccordionTrigger className="flex-1 text-left hover:no-underline p-0">
-                                        <CardTitle className="text-base">
-                                            {item.descripcion ? item.descripcion : `Item ${index + 1}`}
-                                            {item.descripcion && ` (# ${item.cantidad})`}
-                                        </CardTitle>
+                                        <div className="flex items-center gap-2">
+                                            {hasError && (
+                                                <AlertCircle className="h-4 w-4 text-red-500 flex-shrink-0" />
+                                            )}
+                                            <CardTitle className={`text-base ${hasError ? "text-red-500" : ""}`}>
+                                                {item.descripcion ? item.descripcion : `Item ${index + 1}`}
+                                                {item.descripcion && ` (# ${item.cantidad})`}
+                                                {hasError && !openAccordions.includes(index.toString()) && (
+                                                    <span className="text-sm font-normal ml-2">- Faltan datos</span>
+                                                )}
+                                            </CardTitle>
+                                        </div>
                                     </AccordionTrigger>
                                     <Button
                                         type="button"
@@ -159,7 +207,11 @@ export function ItemsManager({ items, onItemsChange }: ItemsManagerProps) {
                                                     placeholder="Ej: CONJUNTO PERCHA DE IZAJE 5 1/8"
                                                     value={item.descripcion}
                                                     onChange={(e) => updateItem(index, 'descripcion', e.target.value)}
+                                                    className={itemError?.descripcion ? "border-red-500" : ""}
                                                 />
+                                                {itemError?.descripcion && (
+                                                    <p className="text-sm text-red-500 mt-1">{itemError.descripcion.message}</p>
+                                                )}
                                             </div>
                                             <div>
                                                 <Label htmlFor={`cantidad-${index}`} className="text-sm">
@@ -171,23 +223,34 @@ export function ItemsManager({ items, onItemsChange }: ItemsManagerProps) {
                                                     min="1"
                                                     value={item.cantidad}
                                                     onChange={(e) => updateItem(index, 'cantidad', parseInt(e.target.value) || 1)}
+                                                    className={itemError?.cantidad ? "border-red-500" : ""}
                                                 />
+                                                {itemError?.cantidad && (
+                                                    <p className="text-sm text-red-500 mt-1">{itemError.cantidad.message}</p>
+                                                )}
                                             </div>
                                         </div>
 
                                         {/* Selector de inspecciones */}
-                                        <ItemInspectionsSelector
-                                            inspectionTypes={inspectionTypes}
-                                            selectedInspections={item.inspections || []}
-                                            onSelectionChange={(inspections) => updateItemInspections(index, inspections)}
-                                            disabled={loading}
-                                        />
+                                        <div>
+                                            <ItemInspectionsSelector
+                                                inspectionTypes={inspectionTypes}
+                                                selectedInspections={item.inspections || []}
+                                                onSelectionChange={(inspections) => updateItemInspections(index, inspections)}
+                                                disabled={loading}
+                                                hasError={!!itemError?.inspections}
+                                            />
+                                            {itemError?.inspections && (
+                                                <p className="text-sm text-red-500 mt-1">Debe seleccionar al menos un tipo de inspección</p>
+                                            )}
+                                        </div>
                                     </div>
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
                     </Card>
-                ))}
+                    )
+                })}
             </div>
             {items.length > 0 && (
                 <div className="text-sm text-muted-foreground">

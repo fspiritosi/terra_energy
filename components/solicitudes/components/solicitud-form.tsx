@@ -4,6 +4,7 @@ import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -483,6 +484,7 @@ export function SolicitudForm({
                                         <ItemsManager
                                             items={items}
                                             onItemsChange={setItems}
+                                            errors={form.formState.errors.items}
                                         />
                                         <FormMessage />
                                     </FormItem>
@@ -537,7 +539,32 @@ export function SolicitudForm({
                         Cancelar
                     </Button>
                     <Button
-                        onClick={form.handleSubmit(handleSubmit)}
+                        onClick={form.handleSubmit(handleSubmit, (errors) => {
+                            // Mostrar toast con los errores de validación
+                            const errorMessages: string[] = []
+
+                            if (errors.cliente_id) errorMessages.push("Selecciona un cliente")
+                            if (errors.lugar) errorMessages.push("Completa el lugar")
+                            if (errors.responsable) errorMessages.push("Completa el responsable")
+                            if (errors.equipo) errorMessages.push("Selecciona un equipo")
+                            if (errors.fecha_entrega_deseada) errorMessages.push("Selecciona la fecha de entrega")
+                            if (errors.trabajos_ids) errorMessages.push("Selecciona al menos un trabajo")
+                            if (errors.items) {
+                                if (Array.isArray(errors.items)) {
+                                    // Hay errores en items específicos
+                                    errorMessages.push("Completa los datos de los items marcados en rojo")
+                                } else {
+                                    // No hay items
+                                    errorMessages.push("Agrega al menos un item")
+                                }
+                            }
+
+                            if (errorMessages.length > 0) {
+                                toast.error("Faltan campos obligatorios", {
+                                    description: errorMessages.join(", ")
+                                })
+                            }
+                        })}
                         disabled={isLoading}
                     >
                         {isLoading
